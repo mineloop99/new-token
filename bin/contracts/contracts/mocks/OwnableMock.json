@@ -1,0 +1,161 @@
+{
+    "contractName": "OwnableMock",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "OwnershipTransferred",
+            "type": "event"
+        },
+        {
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "renounceOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"d:/Github/new_token/contracts/contracts/mocks/OwnableMock.sol\":\"OwnableMock\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"d:/Github/new_token/contracts/contracts/access/Ownable.sol\":{\"keccak256\":\"0xcf02b12b43a19c47f55f3cb134bdb21e58bf40ed75aea99664b35d039f725719\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://690f336b242e4b5be0540e358dd50d45338bd83782ad2a0226a473fc8f918165\",\"dweb:/ipfs/QmPnnme73tgoW5GZqGLHT7oA9u6866LbMqRyw4uNh1X7vS\"]},\"d:/Github/new_token/contracts/contracts/mocks/OwnableMock.sol\":{\"keccak256\":\"0x1bed85aeb2c75b973e0d550e2fad263d961b9ceca99f31dc937c56edef981275\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c6a48327fb2d96571a374b727430b211f5df376c2c985fe68f845d394a87ce24\",\"dweb:/ipfs/QmVEhjcqPYH9Bw4GX4bN6emB9yJoNV1H6jn6B52zfScnbz\"]},\"d:/Github/new_token/contracts/contracts/utils/Context.sol\":{\"keccak256\":\"0x00f8a1bd52713525eb90f70b64f028de5c075fb6298cc9de2e8f0c022e1595ff\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4b5121409ef8f276add2cb646a4614809fb824012addf8f584d0bb2e0bb7ba53\",\"dweb:/ipfs/QmdN1Yk9Xmskgk2Y6DWNX7EmXU5EtKroCGHiQrHpXSWRZp\"]}},\"version\":1}",
+    "bytecode": "608060405234801561001057600080fd5b5061001a3361001f565b61006f565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b61026e8061007e6000396000f3fe608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006f575b600080fd5b61004e610082565b005b600054604080516001600160a01b039092168252519081900360200190f35b61004e61007d366004610208565b6100ed565b6000546001600160a01b031633146100e15760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064015b60405180910390fd5b6100eb60006101b8565b565b6000546001600160a01b031633146101475760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064016100d8565b6001600160a01b0381166101ac5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084016100d8565b6101b5816101b8565b50565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b60006020828403121561021a57600080fd5b81356001600160a01b038116811461023157600080fd5b939250505056fea26469706673582212205ac82529ab7c9eb3d78a8a0f70d4990f66db87b1086258e9e62ac5325b1667dd64736f6c634300080a0033",
+    "deployedBytecode": "608060405234801561001057600080fd5b50600436106100415760003560e01c8063715018a6146100465780638da5cb5b14610050578063f2fde38b1461006f575b600080fd5b61004e610082565b005b600054604080516001600160a01b039092168252519081900360200190f35b61004e61007d366004610208565b6100ed565b6000546001600160a01b031633146100e15760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064015b60405180910390fd5b6100eb60006101b8565b565b6000546001600160a01b031633146101475760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e657260448201526064016100d8565b6001600160a01b0381166101ac5760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b60648201526084016100d8565b6101b5816101b8565b50565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b60006020828403121561021a57600080fd5b81356001600160a01b038116811461023157600080fd5b939250505056fea26469706673582212205ac82529ab7c9eb3d78a8a0f70d4990f66db87b1086258e9e62ac5325b1667dd64736f6c634300080a0033",
+    "sourceMap": "91:34:115:-:0;;;;;;;;;;;;-1:-1:-1;921:32:8;719:10:195;921:18:8;:32::i;:::-;91:34:115;;2270:187:8;2343:16;2362:6;;-1:-1:-1;;;;;2378:17:8;;;-1:-1:-1;;;;;;2378:17:8;;;;;;2410:40;;2362:6;;;;;;;2410:40;;2343:16;2410:40;2333:124;2270:187;:::o;91:34:115:-;;;;;;;",
+    "deployedSourceMap": "91:34:115:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1668:101:8;;;:::i;:::-;;1036:85;1082:7;1108:6;1036:85;;;-1:-1:-1;;;;;1108:6:8;;;160:51:223;;1036:85:8;;;;;148:2:223;1036:85:8;;;1918:198;;;;;;:::i;:::-;;:::i;1668:101::-;1082:7;1108:6;-1:-1:-1;;;;;1108:6:8;719:10:195;1248:23:8;1240:68;;;;-1:-1:-1;;;1240:68:8;;715:2:223;1240:68:8;;;697:21:223;;;734:18;;;727:30;793:34;773:18;;;766:62;845:18;;1240:68:8;;;;;;;;;1732:30:::1;1759:1;1732:18;:30::i;:::-;1668:101::o:0;1918:198::-;1082:7;1108:6;-1:-1:-1;;;;;1108:6:8;719:10:195;1248:23:8;1240:68;;;;-1:-1:-1;;;1240:68:8;;715:2:223;1240:68:8;;;697:21:223;;;734:18;;;727:30;793:34;773:18;;;766:62;845:18;;1240:68:8;513:356:223;1240:68:8;-1:-1:-1;;;;;2006:22:8;::::1;1998:73;;;::::0;-1:-1:-1;;;1998:73:8;;1076:2:223;1998:73:8::1;::::0;::::1;1058:21:223::0;1115:2;1095:18;;;1088:30;1154:34;1134:18;;;1127:62;-1:-1:-1;;;1205:18:223;;;1198:36;1251:19;;1998:73:8::1;874:402:223::0;1998:73:8::1;2081:28;2100:8;2081:18;:28::i;:::-;1918:198:::0;:::o;2270:187::-;2343:16;2362:6;;-1:-1:-1;;;;;2378:17:8;;;-1:-1:-1;;;;;;2378:17:8;;;;;;2410:40;;2362:6;;;;;;;2410:40;;2343:16;2410:40;2333:124;2270:187;:::o;222:286:223:-;281:6;334:2;322:9;313:7;309:23;305:32;302:52;;;350:1;347;340:12;302:52;376:23;;-1:-1:-1;;;;;428:31:223;;418:42;;408:70;;474:1;471;464:12;408:70;497:5;222:286;-1:-1:-1;;;222:286:223:o",
+    "sourcePath": "d:/Github/new_token/contracts/contracts/mocks/OwnableMock.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.10+commit.fc410830"
+    },
+    "ast": {
+        "absolutePath": "d:/Github/new_token/contracts/contracts/mocks/OwnableMock.sol",
+        "exportedSymbols": {
+            "Context": [
+                26510
+            ],
+            "Ownable": [
+                2979
+            ],
+            "OwnableMock": [
+                13977
+            ]
+        },
+        "id": 13978,
+        "license": "MIT",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 13973,
+                "literals": [
+                    "solidity",
+                    "^",
+                    "0.8",
+                    ".0"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "33:23:115"
+            },
+            {
+                "absolutePath": "d:/Github/new_token/contracts/contracts/access/Ownable.sol",
+                "file": "../access/Ownable.sol",
+                "id": 13974,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 13978,
+                "sourceUnit": 2980,
+                "src": "58:31:115",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "baseName": {
+                            "id": 13975,
+                            "name": "Ownable",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 2979,
+                            "src": "115:7:115"
+                        },
+                        "id": 13976,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "115:7:115"
+                    }
+                ],
+                "canonicalName": "OwnableMock",
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "fullyImplemented": true,
+                "id": 13977,
+                "linearizedBaseContracts": [
+                    13977,
+                    2979,
+                    26510
+                ],
+                "name": "OwnableMock",
+                "nameLocation": "100:11:115",
+                "nodeType": "ContractDefinition",
+                "nodes": [],
+                "scope": 13978,
+                "src": "91:34:115",
+                "usedErrors": []
+            }
+        ],
+        "src": "33:93:115"
+    },
+    "functionHashes": {
+        "owner()": "8da5cb5b",
+        "renounceOwnership()": "715018a6",
+        "transferOwnership(address)": "f2fde38b"
+    },
+    "gasEstimates": {
+        "creation": {
+            "codeDepositCost": "124400",
+            "executionCost": "26012",
+            "totalCost": "150412"
+        },
+        "external": {
+            "owner()": "2292",
+            "renounceOwnership()": "28092",
+            "transferOwnership(address)": "28296"
+        }
+    }
+}

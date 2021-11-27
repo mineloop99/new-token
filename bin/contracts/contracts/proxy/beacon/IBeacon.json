@@ -1,0 +1,145 @@
+{
+    "contractName": "IBeacon",
+    "abi": [
+        {
+            "inputs": [],
+            "name": "implementation",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"implementation\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"This is the interface that {BeaconProxy} expects of its beacon.\",\"kind\":\"dev\",\"methods\":{\"implementation()\":{\"details\":\"Must return an address that can be used as a delegate call target. {BeaconProxy} will check that this address is a contract.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"d:/Github/new_token/contracts/contracts/proxy/beacon/IBeacon.sol\":\"IBeacon\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"d:/Github/new_token/contracts/contracts/proxy/beacon/IBeacon.sol\":{\"keccak256\":\"0xb52151406a4af8b158422a0fdf699f151e4d657377956bdb3fb8bc05f0302c68\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e331a5d30cb47dc19567190e5abf8e9f8216673f3b9c54ac08eb6b83c1c96b25\",\"dweb:/ipfs/QmNvtb4NfQ6HhL8JgazT9bjX2nao6zfXAgtVXpjpRNXdTY\"]}},\"version\":1}",
+    "bytecode": "",
+    "deployedBytecode": "",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "sourcePath": "d:/Github/new_token/contracts/contracts/proxy/beacon/IBeacon.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.10+commit.fc410830"
+    },
+    "ast": {
+        "absolutePath": "d:/Github/new_token/contracts/contracts/proxy/beacon/IBeacon.sol",
+        "exportedSymbols": {
+            "IBeacon": [
+                17628
+            ]
+        },
+        "id": 17629,
+        "license": "MIT",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 17620,
+                "literals": [
+                    "solidity",
+                    "^",
+                    "0.8",
+                    ".0"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "93:23:141"
+            },
+            {
+                "abstract": false,
+                "baseContracts": [],
+                "canonicalName": "IBeacon",
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": {
+                    "id": 17621,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "118:79:141",
+                    "text": " @dev This is the interface that {BeaconProxy} expects of its beacon."
+                },
+                "fullyImplemented": false,
+                "id": 17628,
+                "linearizedBaseContracts": [
+                    17628
+                ],
+                "name": "IBeacon",
+                "nameLocation": "208:7:141",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "documentation": {
+                            "id": 17622,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "222:162:141",
+                            "text": " @dev Must return an address that can be used as a delegate call target.\n {BeaconProxy} will check that this address is a contract."
+                        },
+                        "functionSelector": "5c60da1b",
+                        "id": 17627,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "implementation",
+                        "nameLocation": "398:14:141",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 17623,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "412:2:141"
+                        },
+                        "returnParameters": {
+                            "id": 17626,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 17625,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 17627,
+                                    "src": "438:7:141",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 17624,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "438:7:141",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "437:9:141"
+                        },
+                        "scope": 17628,
+                        "src": "389:58:141",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 17629,
+                "src": "198:251:141",
+                "usedErrors": []
+            }
+        ],
+        "src": "93:357:141"
+    },
+    "functionHashes": {
+        "implementation()": "5c60da1b"
+    },
+    "gasEstimates": null
+}

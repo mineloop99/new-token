@@ -1,0 +1,292 @@
+{
+    "contractName": "IERC2981",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "salePrice",
+                    "type": "uint256"
+                }
+            ],
+            "name": "royaltyInfo",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "receiver",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "royaltyAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes4",
+                    "name": "interfaceId",
+                    "type": "bytes4"
+                }
+            ],
+            "name": "supportsInterface",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"tokenId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"salePrice\",\"type\":\"uint256\"}],\"name\":\"royaltyInfo\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"receiver\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"royaltyAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Interface for the NFT Royalty Standard\",\"kind\":\"dev\",\"methods\":{\"royaltyInfo(uint256,uint256)\":{\"details\":\"Called with the sale price to determine how much royalty is owed and to whom.\",\"params\":{\"salePrice\":\"- the sale price of the NFT asset specified by `tokenId`\",\"tokenId\":\"- the NFT asset queried for royalty information\"},\"returns\":{\"receiver\":\"- address of who should be sent the royalty payment\",\"royaltyAmount\":\"- the royalty payment amount for `salePrice`\"}},\"supportsInterface(bytes4)\":{\"details\":\"Returns true if this contract implements the interface defined by `interfaceId`. See the corresponding https://eips.ethereum.org/EIPS/eip-165#how-interfaces-are-identified[EIP section] to learn more about how these ids are created. This function call must use less than 30 000 gas.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"d:/Github/new_token/contracts/contracts/interfaces/IERC2981.sol\":\"IERC2981\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"d:/Github/new_token/contracts/contracts/interfaces/IERC165.sol\":{\"keccak256\":\"0x5b8308a16aaff0d648ebecfc8018b7a1a99a1e8f5732f50e8f994085b6928a35\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f4e3a0c18059c86019c148e7df8e11593db775e0d6f85fff71ffdf2a20decb48\",\"dweb:/ipfs/QmYn3q86xkF1g3Xygq9MzUmPwqBMCpcnoS248fxR9RhxbC\"]},\"d:/Github/new_token/contracts/contracts/interfaces/IERC2981.sol\":{\"keccak256\":\"0x1aafa13edf3f198f7504d1887c3af9b8704685582ccc7e75a70d8dc9f521c4a3\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2ef67dc7d7bf68175ba862c1f576a42e71046ae5489e6973769b1cf56ded054b\",\"dweb:/ipfs/QmYY2vFzgJzCywVthYD5it6NBYwEomFGXJXRA9oyjfoqcS\"]},\"d:/Github/new_token/contracts/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0xca6e686d3f19501229131c306da8b32cd888cbd3de3ee29036fb984228fedd7b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9f35d5d15a890b60f2be07aee3335868c45bc1355d03a53cb1796c4d374190ad\",\"dweb:/ipfs/QmUM4K1WUr6Ut2Vjox6NFxT6TMun523TVV4eLZsoAonBRq\"]}},\"version\":1}",
+    "bytecode": "",
+    "deployedBytecode": "",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "sourcePath": "d:/Github/new_token/contracts/contracts/interfaces/IERC2981.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.10+commit.fc410830"
+    },
+    "ast": {
+        "absolutePath": "d:/Github/new_token/contracts/contracts/interfaces/IERC2981.sol",
+        "exportedSymbols": {
+            "IERC165": [
+                28596
+            ],
+            "IERC2981": [
+                8267
+            ]
+        },
+        "id": 8268,
+        "license": "MIT",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 8250,
+                "literals": [
+                    "solidity",
+                    "^",
+                    "0.8",
+                    ".0"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "92:23:37"
+            },
+            {
+                "absolutePath": "d:/Github/new_token/contracts/contracts/interfaces/IERC165.sol",
+                "file": "./IERC165.sol",
+                "id": 8251,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 8268,
+                "sourceUnit": 8237,
+                "src": "117:23:37",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [
+                    {
+                        "baseName": {
+                            "id": 8253,
+                            "name": "IERC165",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 28596,
+                            "src": "219:7:37"
+                        },
+                        "id": 8254,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "219:7:37"
+                    }
+                ],
+                "canonicalName": "IERC2981",
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": {
+                    "id": 8252,
+                    "nodeType": "StructuredDocumentation",
+                    "src": "142:54:37",
+                    "text": " @dev Interface for the NFT Royalty Standard"
+                },
+                "fullyImplemented": false,
+                "id": 8267,
+                "linearizedBaseContracts": [
+                    8267,
+                    28596
+                ],
+                "name": "IERC2981",
+                "nameLocation": "207:8:37",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "documentation": {
+                            "id": 8255,
+                            "nodeType": "StructuredDocumentation",
+                            "src": "233:402:37",
+                            "text": " @dev Called with the sale price to determine how much royalty is owed and to whom.\n @param tokenId - the NFT asset queried for royalty information\n @param salePrice - the sale price of the NFT asset specified by `tokenId`\n @return receiver - address of who should be sent the royalty payment\n @return royaltyAmount - the royalty payment amount for `salePrice`"
+                        },
+                        "functionSelector": "2a55205a",
+                        "id": 8266,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "royaltyInfo",
+                        "nameLocation": "649:11:37",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 8260,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 8257,
+                                    "mutability": "mutable",
+                                    "name": "tokenId",
+                                    "nameLocation": "669:7:37",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 8266,
+                                    "src": "661:15:37",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 8256,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "661:7:37",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 8259,
+                                    "mutability": "mutable",
+                                    "name": "salePrice",
+                                    "nameLocation": "686:9:37",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 8266,
+                                    "src": "678:17:37",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 8258,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "678:7:37",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "660:36:37"
+                        },
+                        "returnParameters": {
+                            "id": 8265,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 8262,
+                                    "mutability": "mutable",
+                                    "name": "receiver",
+                                    "nameLocation": "752:8:37",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 8266,
+                                    "src": "744:16:37",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 8261,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "744:7:37",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 8264,
+                                    "mutability": "mutable",
+                                    "name": "royaltyAmount",
+                                    "nameLocation": "770:13:37",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 8266,
+                                    "src": "762:21:37",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 8263,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "762:7:37",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "743:41:37"
+                        },
+                        "scope": 8267,
+                        "src": "640:145:37",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 8268,
+                "src": "197:590:37",
+                "usedErrors": []
+            }
+        ],
+        "src": "92:696:37"
+    },
+    "functionHashes": {
+        "royaltyInfo(uint256,uint256)": "2a55205a",
+        "supportsInterface(bytes4)": "01ffc9a7"
+    },
+    "gasEstimates": null
+}

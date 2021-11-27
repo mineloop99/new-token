@@ -1,0 +1,1618 @@
+{
+    "contractName": "StorageSlotMock",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getAddress",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getBoolean",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getBytes32",
+            "outputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "",
+                    "type": "bytes32"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "getUint256",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "address",
+                    "name": "value",
+                    "type": "address"
+                }
+            ],
+            "name": "setAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "value",
+                    "type": "bool"
+                }
+            ],
+            "name": "setBoolean",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "bytes32",
+                    "name": "value",
+                    "type": "bytes32"
+                }
+            ],
+            "name": "setBytes32",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "bytes32",
+                    "name": "slot",
+                    "type": "bytes32"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setUint256",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"}],\"name\":\"getAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"}],\"name\":\"getBoolean\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"}],\"name\":\"getBytes32\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"}],\"name\":\"getUint256\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"value\",\"type\":\"address\"}],\"name\":\"setAddress\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"},{\"internalType\":\"bool\",\"name\":\"value\",\"type\":\"bool\"}],\"name\":\"setBoolean\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"value\",\"type\":\"bytes32\"}],\"name\":\"setBytes32\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"slot\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"setUint256\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"d:/Github/new_token/contracts/contracts/mocks/StorageSlotMock.sol\":\"StorageSlotMock\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"d:/Github/new_token/contracts/contracts/mocks/StorageSlotMock.sol\":{\"keccak256\":\"0x991149d4223dc6588f05f14ff6b12e98ba26b055ee6518cd49edd6d97e555afb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5e7b10a20c51008067fc365fd5a392c08a87f3db61540f87236ab99b803e2046\",\"dweb:/ipfs/QmPpEdZrRdmzYoUrueCREqNuUSNfmjR1ifDEDKpiX2mCxC\"]},\"d:/Github/new_token/contracts/contracts/utils/StorageSlot.sol\":{\"keccak256\":\"0xa1f058156efab7c3a7f584b7901fb7beb5b4736bf54f33af714ccf75df57424b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://1265d62016c1808e290068b2db11e7408e0538ec5e328e1f56b65b15eb9a4e6c\",\"dweb:/ipfs/QmNT6kwSsnzqd7XhmY2HkDWiz36LueSfPxXbEWSvTQVyLd\"]}},\"version\":1}",
+    "bytecode": "608060405234801561001057600080fd5b5061023c806100206000396000f3fe608060405234801561001057600080fd5b50600436106100885760003560e01c80634f3029c21161005b5780634f3029c21461010a578063a6ed563e146100c5578063ca446dd91461011e578063f8715b3e1461014957600080fd5b806321f8a7211461008d57806333598b00146100c55780633848207a146100e55780634e91db081461010a575b600080fd5b6100a861009b366004610165565b546001600160a01b031690565b6040516001600160a01b0390911681526020015b60405180910390f35b6100d76100d3366004610165565b5490565b6040519081526020016100bc565b6100fa6100f3366004610165565b5460ff1690565b60405190151581526020016100bc565b61011c61011836600461017e565b9055565b005b61011c61012c3660046101a0565b81546001600160a01b0319166001600160a01b0391909116179055565b61011c6101573660046101dc565b815460ff1916901515179055565b60006020828403121561017757600080fd5b5035919050565b6000806040838503121561019157600080fd5b50508035926020909101359150565b600080604083850312156101b357600080fd5b8235915060208301356001600160a01b03811681146101d157600080fd5b809150509250929050565b600080604083850312156101ef57600080fd5b82359150602083013580151581146101d157600080fdfea26469706673582212205d1df02520c73a06fadc22c53fbc866676ec7985d51b786673dea255398e238664736f6c634300080a0033",
+    "deployedBytecode": "608060405234801561001057600080fd5b50600436106100885760003560e01c80634f3029c21161005b5780634f3029c21461010a578063a6ed563e146100c5578063ca446dd91461011e578063f8715b3e1461014957600080fd5b806321f8a7211461008d57806333598b00146100c55780633848207a146100e55780634e91db081461010a575b600080fd5b6100a861009b366004610165565b546001600160a01b031690565b6040516001600160a01b0390911681526020015b60405180910390f35b6100d76100d3366004610165565b5490565b6040519081526020016100bc565b6100fa6100f3366004610165565b5460ff1690565b60405190151581526020016100bc565b61011c61011836600461017e565b9055565b005b61011c61012c3660046101a0565b81546001600160a01b0319166001600160a01b0391909116179055565b61011c6101573660046101dc565b815460ff1916901515179055565b60006020828403121561017757600080fd5b5035919050565b6000806040838503121561019157600080fd5b50508035926020909101359150565b600080604083850312156101b357600080fd5b8235915060208301356001600160a01b03811681146101d157600080fd5b809150509250929050565b600080604083850312156101ef57600080fd5b82359150602083013580151581146101d157600080fdfea26469706673582212205d1df02520c73a06fadc22c53fbc866676ec7985d51b786673dea255398e238664736f6c634300080a0033",
+    "sourceMap": "94:997:127:-:0;;;;;;;;;;;;;;;;;;;",
+    "deployedSourceMap": "94:997:127:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;732:115;;;;;;:::i;:::-;813:27;-1:-1:-1;;;;;813:27:127;;732:115;;;;-1:-1:-1;;;;;363:32:223;;;345:51;;333:2;318:18;732:115:127;;;;;;;;974;;;;;;:::i;:::-;1055:27;;974:115;;;;553:25:223;;;541:2;526:18;974:115:127;407:177:223;614:112:127;;;;;;:::i;:::-;692:27;;;;614:112;;;;754:14:223;;747:22;729:41;;717:2;702:18;614:112:127;589:187:223;386:108:127;;;;;;:::i;:::-;452:35;;386:108;;;272;;;;;;:::i;:::-;338:35;;-1:-1:-1;;;;;;338:35:127;-1:-1:-1;;;;;338:35:127;;;;;;;272:108;161:105;;;;;;:::i;:::-;224:35;;-1:-1:-1;;224:35:127;;;;;;;161:105;14:180:223;73:6;126:2;114:9;105:7;101:23;97:32;94:52;;;142:1;139;132:12;94:52;-1:-1:-1;165:23:223;;14:180;-1:-1:-1;14:180:223:o;781:248::-;849:6;857;910:2;898:9;889:7;885:23;881:32;878:52;;;926:1;923;916:12;878:52;-1:-1:-1;;949:23:223;;;1019:2;1004:18;;;991:32;;-1:-1:-1;781:248:223:o;1469:354::-;1537:6;1545;1598:2;1586:9;1577:7;1573:23;1569:32;1566:52;;;1614:1;1611;1604:12;1566:52;1637:23;;;-1:-1:-1;1710:2:223;1695:18;;1682:32;-1:-1:-1;;;;;1743:31:223;;1733:42;;1723:70;;1789:1;1786;1779:12;1723:70;1812:5;1802:15;;;1469:354;;;;;:::o;1828:341::-;1893:6;1901;1954:2;1942:9;1933:7;1929:23;1925:32;1922:52;;;1970:1;1967;1960:12;1922:52;2006:9;1993:23;1983:33;;2066:2;2055:9;2051:18;2038:32;2113:5;2106:13;2099:21;2092:5;2089:32;2079:60;;2135:1;2132;2125:12",
+    "sourcePath": "d:/Github/new_token/contracts/contracts/mocks/StorageSlotMock.sol",
+    "compiler": {
+        "name": "solc",
+        "version": "0.8.10+commit.fc410830"
+    },
+    "ast": {
+        "absolutePath": "d:/Github/new_token/contracts/contracts/mocks/StorageSlotMock.sol",
+        "exportedSymbols": {
+            "StorageSlot": [
+                26810
+            ],
+            "StorageSlotMock": [
+                15566
+            ]
+        },
+        "id": 15567,
+        "license": "MIT",
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 15445,
+                "literals": [
+                    "solidity",
+                    "^",
+                    "0.8",
+                    ".0"
+                ],
+                "nodeType": "PragmaDirective",
+                "src": "33:23:127"
+            },
+            {
+                "absolutePath": "d:/Github/new_token/contracts/contracts/utils/StorageSlot.sol",
+                "file": "../utils/StorageSlot.sol",
+                "id": 15446,
+                "nameLocation": "-1:-1:-1",
+                "nodeType": "ImportDirective",
+                "scope": 15567,
+                "sourceUnit": 26811,
+                "src": "58:34:127",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "abstract": false,
+                "baseContracts": [],
+                "canonicalName": "StorageSlotMock",
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "fullyImplemented": true,
+                "id": 15566,
+                "linearizedBaseContracts": [
+                    15566
+                ],
+                "name": "StorageSlotMock",
+                "nameLocation": "103:15:127",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "id": 15449,
+                        "libraryName": {
+                            "id": 15447,
+                            "name": "StorageSlot",
+                            "nodeType": "IdentifierPath",
+                            "referencedDeclaration": 26810,
+                            "src": "131:11:127"
+                        },
+                        "nodeType": "UsingForDirective",
+                        "src": "125:30:127",
+                        "typeName": {
+                            "id": 15448,
+                            "name": "bytes32",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "147:7:127",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_bytes32",
+                                "typeString": "bytes32"
+                            }
+                        }
+                    },
+                    {
+                        "body": {
+                            "id": 15464,
+                            "nodeType": "Block",
+                            "src": "214:52:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "id": 15462,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "expression": {
+                                                "arguments": [],
+                                                "expression": {
+                                                    "argumentTypes": [],
+                                                    "expression": {
+                                                        "id": 15456,
+                                                        "name": "slot",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 15451,
+                                                        "src": "224:4:127",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_bytes32",
+                                                            "typeString": "bytes32"
+                                                        }
+                                                    },
+                                                    "id": 15458,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "getBooleanSlot",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 26787,
+                                                    "src": "224:19:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_BooleanSlot_$26759_storage_ptr_$bound_to$_t_bytes32_$",
+                                                        "typeString": "function (bytes32) pure returns (struct StorageSlot.BooleanSlot storage pointer)"
+                                                    }
+                                                },
+                                                "id": 15459,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "224:21:127",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_struct$_BooleanSlot_$26759_storage_ptr",
+                                                    "typeString": "struct StorageSlot.BooleanSlot storage pointer"
+                                                }
+                                            },
+                                            "id": 15460,
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "memberName": "value",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 26758,
+                                            "src": "224:27:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_bool",
+                                                "typeString": "bool"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 15461,
+                                            "name": "value",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 15453,
+                                            "src": "254:5:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_bool",
+                                                "typeString": "bool"
+                                            }
+                                        },
+                                        "src": "224:35:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "id": 15463,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "224:35:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "f8715b3e",
+                        "id": 15465,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setBoolean",
+                        "nameLocation": "170:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15454,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15451,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "189:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15465,
+                                    "src": "181:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15450,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "181:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 15453,
+                                    "mutability": "mutable",
+                                    "name": "value",
+                                    "nameLocation": "200:5:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15465,
+                                    "src": "195:10:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 15452,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "195:4:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "180:26:127"
+                        },
+                        "returnParameters": {
+                            "id": 15455,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "214:0:127"
+                        },
+                        "scope": 15566,
+                        "src": "161:105:127",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15480,
+                            "nodeType": "Block",
+                            "src": "328:52:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "id": 15478,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "expression": {
+                                                "arguments": [],
+                                                "expression": {
+                                                    "argumentTypes": [],
+                                                    "expression": {
+                                                        "id": 15472,
+                                                        "name": "slot",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 15467,
+                                                        "src": "338:4:127",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_bytes32",
+                                                            "typeString": "bytes32"
+                                                        }
+                                                    },
+                                                    "id": 15474,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "getAddressSlot",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 26776,
+                                                    "src": "338:19:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_AddressSlot_$26756_storage_ptr_$bound_to$_t_bytes32_$",
+                                                        "typeString": "function (bytes32) pure returns (struct StorageSlot.AddressSlot storage pointer)"
+                                                    }
+                                                },
+                                                "id": 15475,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "338:21:127",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_struct$_AddressSlot_$26756_storage_ptr",
+                                                    "typeString": "struct StorageSlot.AddressSlot storage pointer"
+                                                }
+                                            },
+                                            "id": 15476,
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "memberName": "value",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 26755,
+                                            "src": "338:27:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 15477,
+                                            "name": "value",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 15469,
+                                            "src": "368:5:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "338:35:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 15479,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "338:35:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "ca446dd9",
+                        "id": 15481,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setAddress",
+                        "nameLocation": "281:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15470,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15467,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "300:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15481,
+                                    "src": "292:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15466,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "292:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 15469,
+                                    "mutability": "mutable",
+                                    "name": "value",
+                                    "nameLocation": "314:5:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15481,
+                                    "src": "306:13:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 15468,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "306:7:127",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "291:29:127"
+                        },
+                        "returnParameters": {
+                            "id": 15471,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "328:0:127"
+                        },
+                        "scope": 15566,
+                        "src": "272:108:127",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15496,
+                            "nodeType": "Block",
+                            "src": "442:52:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "id": 15494,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "expression": {
+                                                "arguments": [],
+                                                "expression": {
+                                                    "argumentTypes": [],
+                                                    "expression": {
+                                                        "id": 15488,
+                                                        "name": "slot",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 15483,
+                                                        "src": "452:4:127",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_bytes32",
+                                                            "typeString": "bytes32"
+                                                        }
+                                                    },
+                                                    "id": 15490,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "getBytes32Slot",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 26798,
+                                                    "src": "452:19:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_Bytes32Slot_$26762_storage_ptr_$bound_to$_t_bytes32_$",
+                                                        "typeString": "function (bytes32) pure returns (struct StorageSlot.Bytes32Slot storage pointer)"
+                                                    }
+                                                },
+                                                "id": 15491,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "452:21:127",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_struct$_Bytes32Slot_$26762_storage_ptr",
+                                                    "typeString": "struct StorageSlot.Bytes32Slot storage pointer"
+                                                }
+                                            },
+                                            "id": 15492,
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "memberName": "value",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 26761,
+                                            "src": "452:27:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_bytes32",
+                                                "typeString": "bytes32"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 15493,
+                                            "name": "value",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 15485,
+                                            "src": "482:5:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_bytes32",
+                                                "typeString": "bytes32"
+                                            }
+                                        },
+                                        "src": "452:35:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "id": 15495,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "452:35:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "4e91db08",
+                        "id": 15497,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setBytes32",
+                        "nameLocation": "395:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15486,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15483,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "414:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15497,
+                                    "src": "406:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15482,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "406:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 15485,
+                                    "mutability": "mutable",
+                                    "name": "value",
+                                    "nameLocation": "428:5:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15497,
+                                    "src": "420:13:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15484,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "420:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "405:29:127"
+                        },
+                        "returnParameters": {
+                            "id": 15487,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "442:0:127"
+                        },
+                        "scope": 15566,
+                        "src": "386:108:127",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15512,
+                            "nodeType": "Block",
+                            "src": "556:52:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "id": 15510,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "expression": {
+                                                "arguments": [],
+                                                "expression": {
+                                                    "argumentTypes": [],
+                                                    "expression": {
+                                                        "id": 15504,
+                                                        "name": "slot",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 15499,
+                                                        "src": "566:4:127",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_bytes32",
+                                                            "typeString": "bytes32"
+                                                        }
+                                                    },
+                                                    "id": 15506,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "getUint256Slot",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 26809,
+                                                    "src": "566:19:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_Uint256Slot_$26765_storage_ptr_$bound_to$_t_bytes32_$",
+                                                        "typeString": "function (bytes32) pure returns (struct StorageSlot.Uint256Slot storage pointer)"
+                                                    }
+                                                },
+                                                "id": 15507,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "566:21:127",
+                                                "tryCall": false,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_struct$_Uint256Slot_$26765_storage_ptr",
+                                                    "typeString": "struct StorageSlot.Uint256Slot storage pointer"
+                                                }
+                                            },
+                                            "id": 15508,
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "memberName": "value",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 26764,
+                                            "src": "566:27:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "id": 15509,
+                                            "name": "value",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 15501,
+                                            "src": "596:5:127",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "src": "566:35:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "id": 15511,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "566:35:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "4f3029c2",
+                        "id": 15513,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setUint256",
+                        "nameLocation": "509:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15502,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15499,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "528:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15513,
+                                    "src": "520:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15498,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "520:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 15501,
+                                    "mutability": "mutable",
+                                    "name": "value",
+                                    "nameLocation": "542:5:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15513,
+                                    "src": "534:13:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 15500,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "534:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "519:29:127"
+                        },
+                        "returnParameters": {
+                            "id": 15503,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "556:0:127"
+                        },
+                        "scope": 15566,
+                        "src": "500:108:127",
+                        "stateMutability": "nonpayable",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15525,
+                            "nodeType": "Block",
+                            "src": "675:51:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "expression": {
+                                            "arguments": [],
+                                            "expression": {
+                                                "argumentTypes": [],
+                                                "expression": {
+                                                    "id": 15520,
+                                                    "name": "slot",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 15515,
+                                                    "src": "692:4:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_bytes32",
+                                                        "typeString": "bytes32"
+                                                    }
+                                                },
+                                                "id": 15521,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "memberName": "getBooleanSlot",
+                                                "nodeType": "MemberAccess",
+                                                "referencedDeclaration": 26787,
+                                                "src": "692:19:127",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_BooleanSlot_$26759_storage_ptr_$bound_to$_t_bytes32_$",
+                                                    "typeString": "function (bytes32) pure returns (struct StorageSlot.BooleanSlot storage pointer)"
+                                                }
+                                            },
+                                            "id": 15522,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "kind": "functionCall",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "692:21:127",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_struct$_BooleanSlot_$26759_storage_ptr",
+                                                "typeString": "struct StorageSlot.BooleanSlot storage pointer"
+                                            }
+                                        },
+                                        "id": 15523,
+                                        "isConstant": false,
+                                        "isLValue": true,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "memberName": "value",
+                                        "nodeType": "MemberAccess",
+                                        "referencedDeclaration": 26758,
+                                        "src": "692:27:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "functionReturnParameters": 15519,
+                                    "id": 15524,
+                                    "nodeType": "Return",
+                                    "src": "685:34:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "3848207a",
+                        "id": 15526,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getBoolean",
+                        "nameLocation": "623:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15516,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15515,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "642:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15526,
+                                    "src": "634:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15514,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "634:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "633:14:127"
+                        },
+                        "returnParameters": {
+                            "id": 15519,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15518,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15526,
+                                    "src": "669:4:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 15517,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "669:4:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "668:6:127"
+                        },
+                        "scope": 15566,
+                        "src": "614:112:127",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15538,
+                            "nodeType": "Block",
+                            "src": "796:51:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "expression": {
+                                            "arguments": [],
+                                            "expression": {
+                                                "argumentTypes": [],
+                                                "expression": {
+                                                    "id": 15533,
+                                                    "name": "slot",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 15528,
+                                                    "src": "813:4:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_bytes32",
+                                                        "typeString": "bytes32"
+                                                    }
+                                                },
+                                                "id": 15534,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "memberName": "getAddressSlot",
+                                                "nodeType": "MemberAccess",
+                                                "referencedDeclaration": 26776,
+                                                "src": "813:19:127",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_AddressSlot_$26756_storage_ptr_$bound_to$_t_bytes32_$",
+                                                    "typeString": "function (bytes32) pure returns (struct StorageSlot.AddressSlot storage pointer)"
+                                                }
+                                            },
+                                            "id": 15535,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "kind": "functionCall",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "813:21:127",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_struct$_AddressSlot_$26756_storage_ptr",
+                                                "typeString": "struct StorageSlot.AddressSlot storage pointer"
+                                            }
+                                        },
+                                        "id": 15536,
+                                        "isConstant": false,
+                                        "isLValue": true,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "memberName": "value",
+                                        "nodeType": "MemberAccess",
+                                        "referencedDeclaration": 26755,
+                                        "src": "813:27:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "functionReturnParameters": 15532,
+                                    "id": 15537,
+                                    "nodeType": "Return",
+                                    "src": "806:34:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "21f8a721",
+                        "id": 15539,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getAddress",
+                        "nameLocation": "741:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15529,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15528,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "760:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15539,
+                                    "src": "752:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15527,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "752:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "751:14:127"
+                        },
+                        "returnParameters": {
+                            "id": 15532,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15531,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15539,
+                                    "src": "787:7:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 15530,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "787:7:127",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "786:9:127"
+                        },
+                        "scope": 15566,
+                        "src": "732:115:127",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15551,
+                            "nodeType": "Block",
+                            "src": "917:51:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "expression": {
+                                            "arguments": [],
+                                            "expression": {
+                                                "argumentTypes": [],
+                                                "expression": {
+                                                    "id": 15546,
+                                                    "name": "slot",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 15541,
+                                                    "src": "934:4:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_bytes32",
+                                                        "typeString": "bytes32"
+                                                    }
+                                                },
+                                                "id": 15547,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "memberName": "getBytes32Slot",
+                                                "nodeType": "MemberAccess",
+                                                "referencedDeclaration": 26798,
+                                                "src": "934:19:127",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_Bytes32Slot_$26762_storage_ptr_$bound_to$_t_bytes32_$",
+                                                    "typeString": "function (bytes32) pure returns (struct StorageSlot.Bytes32Slot storage pointer)"
+                                                }
+                                            },
+                                            "id": 15548,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "kind": "functionCall",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "934:21:127",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_struct$_Bytes32Slot_$26762_storage_ptr",
+                                                "typeString": "struct StorageSlot.Bytes32Slot storage pointer"
+                                            }
+                                        },
+                                        "id": 15549,
+                                        "isConstant": false,
+                                        "isLValue": true,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "memberName": "value",
+                                        "nodeType": "MemberAccess",
+                                        "referencedDeclaration": 26761,
+                                        "src": "934:27:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "functionReturnParameters": 15545,
+                                    "id": 15550,
+                                    "nodeType": "Return",
+                                    "src": "927:34:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "a6ed563e",
+                        "id": 15552,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getBytes32",
+                        "nameLocation": "862:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15542,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15541,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "881:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15552,
+                                    "src": "873:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15540,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "873:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "872:14:127"
+                        },
+                        "returnParameters": {
+                            "id": 15545,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15544,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15552,
+                                    "src": "908:7:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15543,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "908:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "907:9:127"
+                        },
+                        "scope": 15566,
+                        "src": "853:115:127",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 15564,
+                            "nodeType": "Block",
+                            "src": "1038:51:127",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "expression": {
+                                            "arguments": [],
+                                            "expression": {
+                                                "argumentTypes": [],
+                                                "expression": {
+                                                    "id": 15559,
+                                                    "name": "slot",
+                                                    "nodeType": "Identifier",
+                                                    "overloadedDeclarations": [],
+                                                    "referencedDeclaration": 15554,
+                                                    "src": "1055:4:127",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_bytes32",
+                                                        "typeString": "bytes32"
+                                                    }
+                                                },
+                                                "id": 15560,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "memberName": "getUint256Slot",
+                                                "nodeType": "MemberAccess",
+                                                "referencedDeclaration": 26809,
+                                                "src": "1055:19:127",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_function_internal_pure$_t_bytes32_$returns$_t_struct$_Uint256Slot_$26765_storage_ptr_$bound_to$_t_bytes32_$",
+                                                    "typeString": "function (bytes32) pure returns (struct StorageSlot.Uint256Slot storage pointer)"
+                                                }
+                                            },
+                                            "id": 15561,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "kind": "functionCall",
+                                            "lValueRequested": false,
+                                            "names": [],
+                                            "nodeType": "FunctionCall",
+                                            "src": "1055:21:127",
+                                            "tryCall": false,
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_struct$_Uint256Slot_$26765_storage_ptr",
+                                                "typeString": "struct StorageSlot.Uint256Slot storage pointer"
+                                            }
+                                        },
+                                        "id": 15562,
+                                        "isConstant": false,
+                                        "isLValue": true,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "memberName": "value",
+                                        "nodeType": "MemberAccess",
+                                        "referencedDeclaration": 26764,
+                                        "src": "1055:27:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "functionReturnParameters": 15558,
+                                    "id": 15563,
+                                    "nodeType": "Return",
+                                    "src": "1048:34:127"
+                                }
+                            ]
+                        },
+                        "functionSelector": "33598b00",
+                        "id": 15565,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getUint256",
+                        "nameLocation": "983:10:127",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 15555,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15554,
+                                    "mutability": "mutable",
+                                    "name": "slot",
+                                    "nameLocation": "1002:4:127",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15565,
+                                    "src": "994:12:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes32",
+                                        "typeString": "bytes32"
+                                    },
+                                    "typeName": {
+                                        "id": 15553,
+                                        "name": "bytes32",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "994:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes32",
+                                            "typeString": "bytes32"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "993:14:127"
+                        },
+                        "returnParameters": {
+                            "id": 15558,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 15557,
+                                    "mutability": "mutable",
+                                    "name": "",
+                                    "nameLocation": "-1:-1:-1",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 15565,
+                                    "src": "1029:7:127",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 15556,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1029:7:127",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1028:9:127"
+                        },
+                        "scope": 15566,
+                        "src": "974:115:127",
+                        "stateMutability": "view",
+                        "virtual": false,
+                        "visibility": "public"
+                    }
+                ],
+                "scope": 15567,
+                "src": "94:997:127",
+                "usedErrors": []
+            }
+        ],
+        "src": "33:1059:127"
+    },
+    "functionHashes": {
+        "getAddress(bytes32)": "21f8a721",
+        "getBoolean(bytes32)": "3848207a",
+        "getBytes32(bytes32)": "a6ed563e",
+        "getUint256(bytes32)": "33598b00",
+        "setAddress(bytes32,address)": "ca446dd9",
+        "setBoolean(bytes32,bool)": "f8715b3e",
+        "setBytes32(bytes32,bytes32)": "4e91db08",
+        "setUint256(bytes32,uint256)": "4f3029c2"
+    },
+    "gasEstimates": {
+        "creation": {
+            "codeDepositCost": "114400",
+            "executionCost": "159",
+            "totalCost": "114559"
+        },
+        "external": {
+            "getAddress(bytes32)": "2398",
+            "getBoolean(bytes32)": "2426",
+            "getBytes32(bytes32)": "2391",
+            "getUint256(bytes32)": "2392",
+            "setAddress(bytes32,address)": "24587",
+            "setBoolean(bytes32,bool)": "24567",
+            "setBytes32(bytes32,bytes32)": "22402",
+            "setUint256(bytes32,uint256)": "22335"
+        }
+    }
+}
