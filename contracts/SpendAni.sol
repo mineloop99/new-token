@@ -399,10 +399,10 @@ contract SpendAni is AccessControl {
         view
         returns (string[] memory, uint256[] memory)
     {
-        uint256[] memory _temp = new uint256[](shopNames.length);
+        uint256[] memory _amounts = new uint256[](shopNames.length);
         for (uint256 i = 0; i < shopNames.length; i++) {
-            _temp[i] = shopInfo[shopNames[i]];
+            _amounts[i] = shopInfo[shopNames[i]];
         }
-        return (shopNames, _temp);
+        return (shopNames, _amounts);
     }
 }

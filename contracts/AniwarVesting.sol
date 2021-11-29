@@ -12,7 +12,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract AniwarVesting is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     struct VestingSchedule {
-        bool isInitialized;
+        // started when true
+        bool isStarted;
         // beneficiary of tokens after they are released
         address beneficiary;
         // start time of the vesting period
@@ -21,11 +22,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         uint256 end;
         // duration of the vesting period in seconds
         uint256 duration;
-        // whether or not the vesting is revocable
-        bool revocable;
         // total amount of tokens to be released at the end of the vesting
-        uint256 amountTotal;
-        // amount of tokens released
         uint256 amountReleased;
         // whether or not the vesting has been revoked
         bool revoked;
@@ -40,13 +37,15 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
     mapping(address => uint256) private beneficiariesVestingCount;
 
     event Released(uint256 amount);
-    event Revoked();
 
     /**
      * @dev Reverts if no vesting schedule matches the passed identifier.
      */
-    modifier onlyIfVestingScheduleExists(bytes32 _vestingScheduleId) {
-        require(vestingSchedules[_vestingScheduleId].isInitialized == true);
+    modifier onlyIfVestingScheduleStarted(bytes32 _vestingScheduleId) {
+        require(
+            vestingSchedules[_vestingScheduleId].isStarted == true,
+            "Vesting is not Started Yet!"
+        );
         _;
     }
 
@@ -54,8 +53,14 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @dev Reverts if the vesting schedule does not exist or has been revoked.
      */
     modifier onlyIfVestingScheduleNotRevoked(bytes32 _vestingScheduleId) {
-        require(vestingSchedules[_vestingScheduleId].isInitialized == true);
-        require(vestingSchedules[_vestingScheduleId].revoked == false);
+        require(
+            vestingSchedules[_vestingScheduleId].isStarted == true,
+            "Vesting is not Started Yet!"
+        );
+        require(
+            vestingSchedules[_vestingScheduleId].revoked == false,
+            "Vesting has been revoked Yet!"
+        );
         _;
     }
 
@@ -64,7 +69,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @param token_ address of the ERC20 token contract
      */
     constructor(address token_) {
-        require(token_ != address(0x0));
+        require(token_ != address(0x0), "Token address wrong!");
         _token = IERC20(token_);
     }
 
@@ -77,7 +82,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @return the number of vesting schedules
      */
     function getVestingSchedulesCountByBeneficiary(address _beneficiary)
-        external
+        public
         view
         returns (uint256)
     {
@@ -88,11 +93,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @dev Returns the vesting schedule id at the given index.
      * @return the vesting id
      */
-    function getVestingIdAtIndex(uint256 _index)
-        external
-        view
-        returns (bytes32)
-    {
+    function getVestingIdAtIndex(uint256 _index) public view returns (bytes32) {
         require(
             _index < getVestingSchedulesCount(),
             "TokenVesting: index out of range"
@@ -104,14 +105,13 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @notice Returns the vesting schedule information for a given holder and index.
      * @return the vesting schedule structure information
      */
-    function getVestingScheduleByAddress(address _beneficiary)
-        external
-        view
-        returns (VestingSchedule memory)
-    {
+    function getVestingScheduleByAddressAndIndex(
+        address _beneficiary,
+        uint256 _index
+    ) public view returns (VestingSchedule memory) {
         return
             vestingSchedules[
-                computeNextVestingScheduleIdForBeneficiary(_beneficiary)
+                computeVestingScheduleIdForAddressAndIndex(_beneficiary, _index)
             ];
     }
 
@@ -119,18 +119,18 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @notice Returns the total amount of vesting schedules.
      * @return the total amount of vesting schedules
      */
-    function getVestingSchedulesTotalAmount() external view returns (uint256) {
+    function getVestingSchedulesTotalAmount() public view returns (uint256) {
         return vestingSchedulesTotalAmount;
     }
 
     /**
      * @dev Returns the address of the ERC20 token managed by the vesting contract.
      */
-    function getToken() external view returns (address) {
+    function getToken() public view returns (address) {
         return address(_token);
     }
 
-    /**
+    /*
      * @notice Creates a new vesting schedule for a beneficiary.
      * @param _beneficiary address of the beneficiary to whom vested tokens are transferred
      * @param _start start time of the vesting period
@@ -140,9 +140,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      */
     function createVestingSchedule(
         address _beneficiary,
-        uint256 _start,
         uint256 _duration,
-        bool _revocable,
         uint256 _amount
     ) public onlyOwner {
         require(
@@ -153,16 +151,13 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         require(_amount > 0, "TokenVesting: amount must be > 0");
         bytes32 vestingScheduleId = this
             .computeNextVestingScheduleIdForBeneficiary(_beneficiary);
-        uint256 end = _start + _duration;
         vestingSchedules[vestingScheduleId] = VestingSchedule(
-            true,
+            false,
             _beneficiary,
-            _start,
-            end,
-            _duration,
-            _revocable,
-            _amount,
             0,
+            0,
+            _duration,
+            _amount,
             false
         );
         vestingSchedulesTotalAmount = vestingSchedulesTotalAmount + _amount;
@@ -170,6 +165,32 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         beneficiariesVestingCount[_beneficiary] =
             beneficiariesVestingCount[_beneficiary] +
             1;
+    }
+
+    function startAllSchedule() public {
+        for (
+            uint256 vestingSchedulesIndex = 0;
+            vestingSchedulesIndex < vestingSchedulesIds.length;
+            vestingSchedulesIndex++
+        ) {
+            bytes32 _vestingScheduleId = vestingSchedulesIds[
+                vestingSchedulesIndex
+            ];
+            if (!vestingSchedules[_vestingScheduleId].isStarted) {
+                uint256 _currentTime = getCurrentTime();
+                VestingSchedule memory _vestingSchedule = VestingSchedule(
+                    true,
+                    vestingSchedules[_vestingScheduleId].beneficiary,
+                    _currentTime,
+                    _currentTime +
+                        vestingSchedules[_vestingScheduleId].duration,
+                    vestingSchedules[_vestingScheduleId].duration,
+                    vestingSchedules[_vestingScheduleId].amountReleased,
+                    false
+                );
+                vestingSchedules[_vestingScheduleId] = _vestingSchedule;
+            }
+        }
     }
 
     /**
@@ -184,17 +205,10 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         VestingSchedule storage vestingSchedule = vestingSchedules[
             vestingScheduleId
         ];
-        require(
-            vestingSchedule.revocable == true,
-            "TokenVesting: vesting is not revocable"
-        );
-        uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
+        uint256 vestedAmount = _computeReleasableAmount(vestingScheduleId);
         if (vestedAmount > 0) {
             release(vestingScheduleId, vestedAmount);
         }
-        uint256 unreleased = vestingSchedule.amountTotal -
-            vestingSchedule.amountReleased;
-        vestingSchedulesTotalAmount = vestingSchedulesTotalAmount - unreleased;
         vestingSchedule.revoked = true;
     }
 
@@ -229,19 +243,22 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
             isBeneficiary || isOwner,
             "TokenVesting: only beneficiary and owner can release vested tokens"
         );
-        uint256 vestedAmount = _computeReleasableAmount(vestingSchedule);
+        uint256 vestedAmount = _computeReleasableAmount(vestingScheduleId);
+
         require(
             vestedAmount >= amount,
             "TokenVesting: cannot release tokens, not enough vested tokens"
         );
+
         vestingSchedule.amountReleased =
-            vestingSchedule.amountReleased +
+            vestingSchedule.amountReleased -
             amount;
         address payable beneficiaryPayable = payable(
             vestingSchedule.beneficiary
         );
         vestingSchedulesTotalAmount = vestingSchedulesTotalAmount - amount;
         _token.safeTransfer(beneficiaryPayable, amount);
+        vestingSchedule.revoked = true;
         emit Released(amount);
     }
 
@@ -263,10 +280,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         onlyIfVestingScheduleNotRevoked(vestingScheduleId)
         returns (uint256)
     {
-        VestingSchedule storage vestingSchedule = vestingSchedules[
-            vestingScheduleId
-        ];
-        return _computeReleasableAmount(vestingSchedule);
+        return _computeReleasableAmount(vestingScheduleId);
     }
 
     /**
@@ -306,21 +320,20 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
      * @dev Computes the releasable amount of tokens for a vesting schedule.
      * @return the amount of releasable tokens
      */
-    function _computeReleasableAmount(VestingSchedule memory vestingSchedule)
+    function _computeReleasableAmount(bytes32 vestingScheduleId)
         internal
         view
         returns (uint256)
     {
-        uint256 currentTime = getCurrentTime();
+        VestingSchedule memory vestingSchedule = vestingSchedules[
+            vestingScheduleId
+        ];
         if (
-            (currentTime < vestingSchedule.end) ||
+            (getCurrentTime() < vestingSchedule.end) ||
+            vestingSchedule.isStarted == false ||
             vestingSchedule.revoked == true
         ) {
             return 0;
-        } else if (
-            currentTime >= vestingSchedule.start + vestingSchedule.duration
-        ) {
-            return vestingSchedule.amountTotal - vestingSchedule.amountReleased;
         } else {
             return vestingSchedule.amountReleased;
         }
