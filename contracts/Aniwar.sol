@@ -30,6 +30,4 @@ contract AniwarToken is ERC20, Pausable, AccessControl, ERC20Burnable {
     ) internal override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
-
-    function burn() {}
 }
