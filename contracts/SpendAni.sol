@@ -1,688 +1,221 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./lib.sol";
 
-interface IWBNB {
-    function deposit() external payable;
-
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function withdraw(uint256) external;
-}
-
-library SafeMath {
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-        return c;
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
     }
 
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a, "SafeMath: subtraction overflow");
-        uint256 c = a - b;
-        return c;
-    }
-
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-        return c;
-    }
-
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // Solidity only automatically asserts when dividing by 0
-        require(b > 0, "SafeMath: division by zero");
-        uint256 c = a / b;
-        return c;
-    }
-
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0, "SafeMath: modulo by zero");
-        return a % b;
+    function _msgData() internal view virtual returns (bytes calldata) {
+        this;
+        return msg.data;
     }
 }
 
-interface IBEP20 {
-    function totalSupply() external view returns (uint256);
+interface IERC165 {
+    function supportsInterface(bytes4 interfaceId) external view returns (bool);
+}
 
-    function balanceOf(address account) external view returns (uint256);
+abstract contract ERC165 is IERC165 {
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return interfaceId == type(IERC165).interfaceId;
+    }
+}
 
-    function transfer(address recipient, uint256 amount)
+interface IAccessControl {
+    function hasRole(bytes32 role, address account)
         external
+        view
         returns (bool);
 
-    function allowance(address owner, address spender)
-        external
-        view
-        returns (uint256);
+    function getRoleAdmin(bytes32 role) external view returns (bytes32);
 
-    function approve(address spender, uint256 amount) external returns (bool);
+    function grantRole(bytes32 role, address account) external;
 
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external returns (bool);
+    function revokeRole(bytes32 role, address account) external;
 
-    function mint(address account, uint256 amount) external returns (bool);
+    function renounceRole(bytes32 role, address account) external;
+}
 
-    function burn(address account, uint256 amount) external returns (bool);
-
-    function addOperator(address minter) external returns (bool);
-
-    function removeOperator(address minter) external returns (bool);
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(
-        address indexed owner,
-        address indexed spender,
-        uint256 value
+abstract contract AccessControl is Context, IAccessControl, ERC165 {
+    struct RoleData {
+        mapping(address => bool) members;
+        bytes32 adminRole;
+    }
+    mapping(bytes32 => RoleData) private _roles;
+    bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
+    event RoleAdminChanged(
+        bytes32 indexed role,
+        bytes32 indexed previousAdminRole,
+        bytes32 indexed newAdminRole
     );
-}
+    event RoleGranted(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
+    event RoleRevoked(
+        bytes32 indexed role,
+        address indexed account,
+        address indexed sender
+    );
 
-library SafeBEP20 {
-    using SafeMath for uint256;
-    using Address for address;
-
-    function safeTransfer(
-        IBEP20 token,
-        address to,
-        uint256 value
-    ) internal {
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transfer.selector, to, value)
-        );
-    }
-
-    function safeTransferFrom(
-        IBEP20 token,
-        address from,
-        address to,
-        uint256 value
-    ) internal {
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-        );
-    }
-
-    function safeApprove(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        require(
-            (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeBEP20: approve from non-zero to non-zero allowance"
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.approve.selector, spender, value)
-        );
-    }
-
-    function safeIncreaseAllowance(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).add(
-            value
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
-            )
-        );
-    }
-
-    function safeDecreaseAllowance(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        // uint256 newAllowance = token.allowance(address(this), spender).sub(value, "SafeBEP20: decreased allowance below zero");
-        uint256 newAllowance = token.allowance(address(this), spender).sub(
-            value
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
-            )
-        );
-    }
-
-    function callOptionalReturn(IBEP20 token, bytes memory data) private {
-        require(address(token).isContract(), "SafeBEP20: call to non-contract");
-        (bool success, bytes memory returndata) = address(token).call(data);
-        require(success, "SafeBEP20: low-level call failed");
-        if (returndata.length > 0) {
-            require(
-                abi.decode(returndata, (bool)),
-                "SafeBEP20: ERC20 operation did not succeed"
-            );
-        }
-    }
-}
-
-contract BnbStaking is Ownable {
-    using SafeMath for uint256;
-    using SafeBEP20 for IBEP20;
-
-    // Info of each user.
-    struct UserInfo {
-        uint256 amount; // How many LP tokens the user has provided.
-        uint256 rewardDebt; // Reward debt. See explanation below.
-        bool inBlackList;
-    }
-
-    // Info of each pool.
-    struct PoolInfo {
-        IBEP20 lpToken; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. Tokens to distribute per block.
-        uint256 lastRewardBlock; // Last block number that Token distribution occurs.
-        uint256 accTokenPerShare; // Accumulated Token per share, times 1e12. See below.
-    }
-
-    // The REWARD TOKEN
-    IBEP20 public rewardToken;
-
-    // adminAddress
-    address public adminAddress;
-
-    // WBNB
-    address public immutable WBNB;
-
-    // Token tokens created per block.
-    uint256 public rewardPerBlock;
-
-    // Info of each pool.
-    PoolInfo[] public poolInfo;
-    // Info of each user that stakes LP tokens.
-    mapping(address => UserInfo) public userInfo;
-    // limit 10 BNB here
-    uint256 public limitAmount = 10000000000000000000;
-    // Total allocation poitns. Must be the sum of all allocation points in all pools.
-    uint256 public totalAllocPoint = 0;
-    // The block number when Token mining starts.
-    uint256 public startBlock;
-    // The block number when Token mining ends.
-    uint256 public bonusEndBlock;
-
-    event Deposit(address indexed user, uint256 amount);
-    event Withdraw(address indexed user, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 amount);
-
-    constructor(
-        IBEP20 _lp,
-        IBEP20 _rewardToken,
-        uint256 _rewardPerBlock,
-        uint256 _startBlock,
-        uint256 _bonusEndBlock,
-        address _adminAddress,
-        address _wbnb
-    ) {
-        rewardToken = _rewardToken;
-        rewardPerBlock = _rewardPerBlock;
-        startBlock = _startBlock;
-        bonusEndBlock = _bonusEndBlock;
-        adminAddress = _adminAddress;
-        WBNB = _wbnb;
-
-        // staking pool
-        poolInfo.push(
-            PoolInfo({
-                lpToken: _lp,
-                allocPoint: 1000,
-                lastRewardBlock: startBlock,
-                accTokenPerShare: 0
-            })
-        );
-
-        totalAllocPoint = 1000;
-    }
-
-    modifier onlyAdmin() {
-        require(
-            msg.sender == adminAddress,
-            "admin: what are you doing in my swarm?"
-        );
-        _;
-    }
-
-    receive() external payable {
-        assert(msg.sender == WBNB); // only accept BNB via fallback from the WBNB contract
-    }
-
-    // Update admin address by the previous dev.
-    function setAdmin(address _adminAddress) public onlyOwner {
-        adminAddress = _adminAddress;
-    }
-
-    function setBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = true;
-    }
-
-    function removeBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = false;
-    }
-
-    // Set the limit amount. Can only be called by the owner.
-    function setLimitAmount(uint256 _amount) public onlyOwner {
-        limitAmount = _amount;
-    }
-
-    // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to)
+    function supportsInterface(bytes4 interfaceId)
         public
         view
-        returns (uint256)
+        virtual
+        override
+        returns (bool)
     {
-        if (_to <= bonusEndBlock) {
-            return _to.sub(_from);
-        } else if (_from >= bonusEndBlock) {
-            return 0;
-        } else {
-            return bonusEndBlock.sub(_from);
-        }
+        return
+            interfaceId == type(IAccessControl).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
-    // View function to see pending Reward on frontend.
-    function pendingReward(address _user) external view returns (uint256) {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[_user];
-        uint256 accTokenPerShare = pool.accTokenPerShare;
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
-            uint256 multiplier = getMultiplier(
-                pool.lastRewardBlock,
-                block.number
-            );
-            uint256 cakeReward = multiplier
-                .mul(rewardPerBlock)
-                .mul(pool.allocPoint)
-                .div(totalAllocPoint);
-            accTokenPerShare = accTokenPerShare.add(
-                cakeReward.mul(1e12).div(lpSupply)
-            );
-        }
-        return user.amount.mul(accTokenPerShare).div(1e12).sub(user.rewardDebt);
-    }
-
-    // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public {
-        PoolInfo storage pool = poolInfo[_pid];
-        if (block.number <= pool.lastRewardBlock) {
-            return;
-        }
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (lpSupply == 0) {
-            pool.lastRewardBlock = block.number;
-            return;
-        }
-        uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 cakeReward = multiplier
-            .mul(rewardPerBlock)
-            .mul(pool.allocPoint)
-            .div(totalAllocPoint);
-        pool.accTokenPerShare = pool.accTokenPerShare.add(
-            cakeReward.mul(1e12).div(lpSupply)
-        );
-        pool.lastRewardBlock = block.number;
-    }
-
-    // Update reward variables for all pools. Be careful of gas spending!
-    function massUpdatePools() public {
-        uint256 length = poolInfo.length;
-        for (uint256 pid = 0; pid < length; ++pid) {
-            updatePool(pid);
-        }
-    }
-
-    // Stake tokens to SmartChef
-    function deposit() public payable {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-
-        require(user.amount.add(msg.value) <= limitAmount, "exceed the top");
-        require(!user.inBlackList, "in black list");
-
-        updatePool(0);
-        if (user.amount > 0) {
-            uint256 pending = user
-                .amount
-                .mul(pool.accTokenPerShare)
-                .div(1e12)
-                .sub(user.rewardDebt);
-            if (pending > 0) {
-                rewardToken.safeTransfer(address(msg.sender), pending);
-            }
-        }
-        if (msg.value > 0) {
-            IWBNB(WBNB).deposit{value: msg.value}();
-            assert(IWBNB(WBNB).transfer(address(this), msg.value));
-            user.amount = user.amount.add(msg.value);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Deposit(msg.sender, msg.value);
-    }
-
-    function safeTransferBNB(address to, uint256 value) internal {
-        (bool success, ) = to.call{gas: 23000, value: value}("");
-        // (bool success,) = to.call{value:value}(new bytes(0));
-        require(success, "TransferHelper: ETH_TRANSFER_FAILED");
-    }
-
-    // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        require(user.amount >= _amount, "withdraw: not good");
-        updatePool(0);
-        uint256 pending = user.amount.mul(pool.accTokenPerShare).div(1e12).sub(
-            user.rewardDebt
-        );
-        if (pending > 0 && !user.inBlackList) {
-            rewardToken.safeTransfer(address(msg.sender), pending);
-        }
-        if (_amount > 0) {
-            user.amount = user.amount.sub(_amount);
-            IWBNB(WBNB).withdraw(_amount);
-            safeTransferBNB(address(msg.sender), _amount);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Withdraw(msg.sender, _amount);
-    }
-
-    // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
-        user.amount = 0;
-        user.rewardDebt = 0;
-    }
-
-    // Withdraw reward. EMERGENCY ONLY.
-    function emergencyRewardWithdraw(uint256 _amount) public onlyOwner {
-        require(
-            _amount < rewardToken.balanceOf(address(this)),
-            "not enough token"
-        );
-        rewardToken.safeTransfer(address(msg.sender), _amount);
-    }
-}
-
-library Address {
-    function isContract(address account) internal view returns (bool) {
-        uint256 size;
-        assembly {
-            size := extcodesize(account)
-        }
-        return size > 0;
-    }
-}
-
-contract BnbStaking is Ownable {
-    using SafeMath for uint256;
-    using SafeBEP20 for IBEP20;
-
-    // Info of each user.
-    struct UserInfo {
-        uint256 amount; // How many LP tokens the user has provided.
-        uint256 rewardDebt; // Reward debt. See explanation below.
-        bool inBlackList;
-    }
-
-    // Info of each pool.
-    struct PoolInfo {
-        IBEP20 lpToken; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. Tokens to distribute per block.
-        uint256 lastRewardBlock; // Last block number that Token distribution occurs.
-        uint256 accTokenPerShare; // Accumulated Token per share, times 1e12. See below.
-    }
-
-    // The REWARD TOKEN
-    IBEP20 public rewardToken;
-
-    // adminAddress
-    address public adminAddress;
-
-    // WBNB
-    address public immutable WBNB;
-
-    // Token tokens created per block.
-    uint256 public rewardPerBlock;
-
-    // Info of each pool.
-    PoolInfo[] public poolInfo;
-    // Info of each user that stakes LP tokens.
-    mapping(address => UserInfo) public userInfo;
-    // limit 10 BNB here
-    uint256 public limitAmount = 10000000000000000000;
-    // Total allocation poitns. Must be the sum of all allocation points in all pools.
-    uint256 public totalAllocPoint = 0;
-    // The block number when Token mining starts.
-    uint256 public startBlock;
-    // The block number when Token mining ends.
-    uint256 public bonusEndBlock;
-
-    event Deposit(address indexed user, uint256 amount);
-    event Withdraw(address indexed user, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 amount);
-
-    constructor(
-        IBEP20 _lp,
-        IBEP20 _rewardToken,
-        uint256 _rewardPerBlock,
-        uint256 _startBlock,
-        uint256 _bonusEndBlock,
-        address _adminAddress,
-        address _wbnb
-    ) {
-        rewardToken = _rewardToken;
-        rewardPerBlock = _rewardPerBlock;
-        startBlock = _startBlock;
-        bonusEndBlock = _bonusEndBlock;
-        adminAddress = _adminAddress;
-        WBNB = _wbnb;
-
-        // staking pool
-        poolInfo.push(
-            PoolInfo({
-                lpToken: _lp,
-                allocPoint: 1000,
-                lastRewardBlock: startBlock,
-                accTokenPerShare: 0
-            })
-        );
-
-        totalAllocPoint = 1000;
-    }
-
-    modifier onlyAdmin() {
-        require(
-            msg.sender == adminAddress,
-            "admin: what are you doing in my swarm?"
-        );
-        _;
-    }
-
-    receive() external payable {
-        assert(msg.sender == WBNB); // only accept BNB via fallback from the WBNB contract
-    }
-
-    // Update admin address by the previous dev.
-    function setAdmin(address _adminAddress) public onlyOwner {
-        adminAddress = _adminAddress;
-    }
-
-    function setBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = true;
-    }
-
-    function removeBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = false;
-    }
-
-    // Set the limit amount. Can only be called by the owner.
-    function setLimitAmount(uint256 _amount) public onlyOwner {
-        limitAmount = _amount;
-    }
-
-    // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to)
+    function hasRole(bytes32 role, address account)
         public
         view
-        returns (uint256)
+        override
+        returns (bool)
     {
-        if (_to <= bonusEndBlock) {
-            return _to.sub(_from);
-        } else if (_from >= bonusEndBlock) {
-            return 0;
-        } else {
-            return bonusEndBlock.sub(_from);
-        }
+        return _roles[role].members[account];
     }
 
-    // View function to see pending Reward on frontend.
-    function pendingReward(address _user) external view returns (uint256) {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[_user];
-        uint256 accTokenPerShare = pool.accTokenPerShare;
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
-            uint256 multiplier = getMultiplier(
-                pool.lastRewardBlock,
-                block.number
-            );
-            uint256 cakeReward = multiplier
-                .mul(rewardPerBlock)
-                .mul(pool.allocPoint)
-                .div(totalAllocPoint);
-            accTokenPerShare = accTokenPerShare.add(
-                cakeReward.mul(1e12).div(lpSupply)
-            );
-        }
-        return user.amount.mul(accTokenPerShare).div(1e12).sub(user.rewardDebt);
+    function getRoleAdmin(bytes32 role) public view override returns (bytes32) {
+        return _roles[role].adminRole;
     }
 
-    // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public {
-        PoolInfo storage pool = poolInfo[_pid];
-        if (block.number <= pool.lastRewardBlock) {
-            return;
-        }
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (lpSupply == 0) {
-            pool.lastRewardBlock = block.number;
-            return;
-        }
-        uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 cakeReward = multiplier
-            .mul(rewardPerBlock)
-            .mul(pool.allocPoint)
-            .div(totalAllocPoint);
-        pool.accTokenPerShare = pool.accTokenPerShare.add(
-            cakeReward.mul(1e12).div(lpSupply)
+    function grantRole(bytes32 role, address account) public virtual override {
+        require(
+            hasRole(getRoleAdmin(role), _msgSender()),
+            "AccessControl: sender must be an admin to grant"
         );
-        pool.lastRewardBlock = block.number;
+        _grantRole(role, account);
     }
 
-    // Update reward variables for all pools. Be careful of gas spending!
-    function massUpdatePools() public {
-        uint256 length = poolInfo.length;
-        for (uint256 pid = 0; pid < length; ++pid) {
-            updatePool(pid);
+    function revokeRole(bytes32 role, address account) public virtual override {
+        require(
+            hasRole(getRoleAdmin(role), _msgSender()),
+            "AccessControl: sender must be an admin to revoke"
+        );
+        _revokeRole(role, account);
+    }
+
+    function renounceRole(bytes32 role, address account)
+        public
+        virtual
+        override
+    {
+        require(
+            account == _msgSender(),
+            "AccessControl: can only renounce roles for self"
+        );
+        _revokeRole(role, account);
+    }
+
+    function _setupRole(bytes32 role, address account) internal virtual {
+        _grantRole(role, account);
+    }
+
+    function _setRoleAdmin(bytes32 role, bytes32 adminRole) internal virtual {
+        emit RoleAdminChanged(role, getRoleAdmin(role), adminRole);
+        _roles[role].adminRole = adminRole;
+    }
+
+    function _grantRole(bytes32 role, address account) private {
+        if (!hasRole(role, account)) {
+            _roles[role].members[account] = true;
+            emit RoleGranted(role, account, _msgSender());
         }
     }
 
-    // Stake tokens to SmartChef
-    function deposit() public payable {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
+    function _revokeRole(bytes32 role, address account) private {
+        if (hasRole(role, account)) {
+            _roles[role].members[account] = false;
+            emit RoleRevoked(role, account, _msgSender());
+        }
+    }
+}
 
-        require(user.amount.add(msg.value) <= limitAmount, "exceed the top");
-        require(!user.inBlackList, "in black list");
+contract SpendAni is AccessControl {
+    using SafeBEP20 for IBEP20;
+    IBEP20 public aniToken;
+    bytes32 public constant CREATOR_ADMIN_SERVER =
+        keccak256("CREATOR_ADMIN_SERVER");
 
-        updatePool(0);
-        if (user.amount > 0) {
-            uint256 pending = user
-                .amount
-                .mul(pool.accTokenPerShare)
-                .div(1e12)
-                .sub(user.rewardDebt);
-            if (pending > 0) {
-                rewardToken.safeTransfer(address(msg.sender), pending);
+    address public recipient = 0x35Af6B31a61eC9F030849a3953394A69a1f9f9eC;
+    // Store key of mapping
+    string[] shopNames;
+    // Key as Shop Name, Amount at uint256
+    mapping(string => uint256) shopInfo;
+
+    event PurchaseItem(
+        address Owner,
+        uint256 fee,
+        string itemName,
+        uint256 timePurchaseItem
+    );
+
+    constructor(address minter, address _aniToken) {
+        _setupRole(DEFAULT_ADMIN_ROLE, address(msg.sender));
+        _setupRole(CREATOR_ADMIN_SERVER, minter);
+        aniToken = IBEP20(_aniToken); // Ani Token
+    }
+
+    function purchaseItem(string memory _itemName) public {
+        require(aniToken.balanceOf(address(msg.sender)) > 0, "need amount > 0");
+        require(shopInfo[_itemName] > 0, "The specific name do not exists");
+        uint256 _amount = shopInfo[_itemName];
+        aniToken.safeTransferFrom(
+            address(msg.sender),
+            address(recipient),
+            _amount
+        );
+        emit PurchaseItem(msg.sender, _amount, _itemName, block.timestamp);
+    }
+
+    function addItemShop(string memory _itemName, uint256 _amount) public {
+        require(
+            hasRole(CREATOR_ADMIN_SERVER, address(msg.sender)),
+            "You are not an Owner"
+        );
+        require(_amount > 0, "Amount need to be greater than 0.");
+        shopNames.push(_itemName);
+        shopInfo[shopNames[shopNames.length - 1]] = _amount;
+    }
+
+    function removeItemShop(string memory _itemName) public {
+        require(
+            hasRole(CREATOR_ADMIN_SERVER, address(msg.sender)),
+            "You are not an Owner"
+        );
+        bytes32 _temp = keccak256(abi.encodePacked(_itemName));
+        shopInfo[_itemName] = 0;
+        for (uint256 i = 0; i < shopNames.length; i++) {
+            if (keccak256(abi.encodePacked(shopNames[i])) == _temp) {
+                delete shopNames[i];
+                return;
             }
         }
-        if (msg.value > 0) {
-            IWBNB(WBNB).deposit{value: msg.value}();
-            assert(IWBNB(WBNB).transfer(address(this), msg.value));
-            user.amount = user.amount.add(msg.value);
+    }
+
+    function getAllShopInfo()
+        public
+        view
+        returns (string[] memory, uint256[] memory)
+    {
+        uint256[] memory _amounts = new uint256[](shopNames.length);
+        for (uint256 i = 0; i < shopNames.length; i++) {
+            _amounts[i] = shopInfo[shopNames[i]];
         }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Deposit(msg.sender, msg.value);
-    }
-
-    function safeTransferBNB(address to, uint256 value) internal {
-        (bool success, ) = to.call{gas: 23000, value: value}("");
-        // (bool success,) = to.call{value:value}(new bytes(0));
-        require(success, "TransferHelper: ETH_TRANSFER_FAILED");
-    }
-
-    // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        require(user.amount >= _amount, "withdraw: not good");
-        updatePool(0);
-        uint256 pending = user.amount.mul(pool.accTokenPerShare).div(1e12).sub(
-            user.rewardDebt
-        );
-        if (pending > 0 && !user.inBlackList) {
-            rewardToken.safeTransfer(address(msg.sender), pending);
-        }
-        if (_amount > 0) {
-            user.amount = user.amount.sub(_amount);
-            IWBNB(WBNB).withdraw(_amount);
-            safeTransferBNB(address(msg.sender), _amount);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Withdraw(msg.sender, _amount);
-    }
-
-    // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
-        user.amount = 0;
-        user.rewardDebt = 0;
-    }
-
-    // Withdraw reward. EMERGENCY ONLY.
-    function emergencyRewardWithdraw(uint256 _amount) public onlyOwner {
-        require(
-            _amount < rewardToken.balanceOf(address(this)),
-            "not enough token"
-        );
-        rewardToken.safeTransfer(address(msg.sender), _amount);
+        return (shopNames, _amounts);
     }
 }

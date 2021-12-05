@@ -1,648 +1,203 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.10;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IWBNB {
-    function deposit() external payable;
+/*
+ * @title TokenVesting
+ */
+contract AniwarVestingSale is Ownable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+    IERC20 private immutable _token;
 
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function withdraw(uint256) external;
-}
-
-library SafeBEP20 {
-    using SafeMath for uint256;
-    using Address for address;
-
-    function safeTransfer(
-        IBEP20 token,
-        address to,
-        uint256 value
-    ) internal {
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transfer.selector, to, value)
-        );
+    struct VestingSchedule {
+        // start time of the vesting period
+        uint256 duration;
+        // total amount of tokens to be released at the end of the vesting
+        uint256 amountReleased;
+        //list Beneficiaries
+        mapping(address => uint256) beneficiariesAmount;
+        // whether or not the vesting has been revoked
+        bool revoked;
     }
 
-    function safeTransferFrom(
-        IBEP20 token,
-        address from,
-        address to,
-        uint256 value
-    ) internal {
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
-        );
-    }
+    mapping(address => uint256) beneficiariesRate;
 
-    function safeApprove(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        require(
-            (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeBEP20: approve from non-zero to non-zero allowance"
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(token.approve.selector, spender, value)
-        );
-    }
+    uint256 private startedTime;
+    uint256 private totalVestedAmount;
+    uint256 private totalVestedAmountLeft;
+    uint256 private totalVestedCount;
+    // started when true
+    bool private isStarted;
+    mapping(uint256 => VestingSchedule) private vestingSchedules;
+    event Released(uint256 amount);
 
-    function safeIncreaseAllowance(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).add(
-            value
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
-            )
-        );
-    }
-
-    function safeDecreaseAllowance(
-        IBEP20 token,
-        address spender,
-        uint256 value
-    ) internal {
-        // uint256 newAllowance = token.allowance(address(this), spender).sub(value, "SafeBEP20: decreased allowance below zero");
-        uint256 newAllowance = token.allowance(address(this), spender).sub(
-            value
-        );
-        callOptionalReturn(
-            token,
-            abi.encodeWithSelector(
-                token.approve.selector,
-                spender,
-                newAllowance
-            )
-        );
-    }
-
-    function callOptionalReturn(IBEP20 token, bytes memory data) private {
-        require(address(token).isContract(), "SafeBEP20: call to non-contract");
-        (bool success, bytes memory returndata) = address(token).call(data);
-        require(success, "SafeBEP20: low-level call failed");
-        if (returndata.length > 0) {
-            require(
-                abi.decode(returndata, (bool)),
-                "SafeBEP20: ERC20 operation did not succeed"
-            );
-        }
-    }
-}
-
-library SafeMath {
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-        return c;
-    }
-
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b <= a, "SafeMath: subtraction overflow");
-        uint256 c = a - b;
-        return c;
-    }
-
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        if (a == 0) {
-            return 0;
-        }
-        uint256 c = a * b;
-        require(c / a == b, "SafeMath: multiplication overflow");
-        return c;
-    }
-
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        // Solidity only automatically asserts when dividing by 0
-        require(b > 0, "SafeMath: division by zero");
-        uint256 c = a / b;
-        return c;
-    }
-
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        require(b != 0, "SafeMath: modulo by zero");
-        return a % b;
-    }
-}
-
-contract BnbStaking is Ownable {
-    using SafeMath for uint256;
-    using SafeBEP20 for IBEP20;
-
-    // Info of each user.
-    struct UserInfo {
-        uint256 amount; // How many LP tokens the user has provided.
-        uint256 rewardDebt; // Reward debt. See explanation below.
-        bool inBlackList;
-    }
-
-    // Info of each pool.
-    struct PoolInfo {
-        IBEP20 lpToken; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. Tokens to distribute per block.
-        uint256 lastRewardBlock; // Last block number that Token distribution occurs.
-        uint256 accTokenPerShare; // Accumulated Token per share, times 1e12. See below.
-    }
-
-    // The REWARD TOKEN
-    IBEP20 public rewardToken;
-
-    // adminAddress
-    address public adminAddress;
-
-    // WBNB
-    address public immutable WBNB;
-
-    // Token tokens created per block.
-    uint256 public rewardPerBlock;
-
-    // Info of each pool.
-    PoolInfo[] public poolInfo;
-    // Info of each user that stakes LP tokens.
-    mapping(address => UserInfo) public userInfo;
-    // limit 10 BNB here
-    uint256 public limitAmount = 10000000000000000000;
-    // Total allocation poitns. Must be the sum of all allocation points in all pools.
-    uint256 public totalAllocPoint = 0;
-    // The block number when Token mining starts.
-    uint256 public startBlock;
-    // The block number when Token mining ends.
-    uint256 public bonusEndBlock;
-
-    event Deposit(address indexed user, uint256 amount);
-    event Withdraw(address indexed user, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 amount);
-
-    constructor(
-        IBEP20 _lp,
-        IBEP20 _rewardToken,
-        uint256 _rewardPerBlock,
-        uint256 _startBlock,
-        uint256 _bonusEndBlock,
-        address _adminAddress,
-        address _wbnb
-    ) {
-        rewardToken = _rewardToken;
-        rewardPerBlock = _rewardPerBlock;
-        startBlock = _startBlock;
-        bonusEndBlock = _bonusEndBlock;
-        adminAddress = _adminAddress;
-        WBNB = _wbnb;
-
-        // staking pool
-        poolInfo.push(
-            PoolInfo({
-                lpToken: _lp,
-                allocPoint: 1000,
-                lastRewardBlock: startBlock,
-                accTokenPerShare: 0
-            })
-        );
-
-        totalAllocPoint = 1000;
-    }
-
-    modifier onlyAdmin() {
-        require(
-            msg.sender == adminAddress,
-            "admin: what are you doing in my swarm?"
-        );
+    modifier onlyIfVestingScheduleStarted() {
+        require(isStarted == true, "Vesting has not Started Yet!");
         _;
     }
 
-    receive() external payable {
-        assert(msg.sender == WBNB); // only accept BNB via fallback from the WBNB contract
-    }
-
-    // Update admin address by the previous dev.
-    function setAdmin(address _adminAddress) public onlyOwner {
-        adminAddress = _adminAddress;
-    }
-
-    function setBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = true;
-    }
-
-    function removeBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = false;
-    }
-
-    // Set the limit amount. Can only be called by the owner.
-    function setLimitAmount(uint256 _amount) public onlyOwner {
-        limitAmount = _amount;
-    }
-
-    // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to)
-        public
-        view
-        returns (uint256)
-    {
-        if (_to <= bonusEndBlock) {
-            return _to.sub(_from);
-        } else if (_from >= bonusEndBlock) {
-            return 0;
-        } else {
-            return bonusEndBlock.sub(_from);
-        }
-    }
-
-    // View function to see pending Reward on frontend.
-    function pendingReward(address _user) external view returns (uint256) {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[_user];
-        uint256 accTokenPerShare = pool.accTokenPerShare;
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
-            uint256 multiplier = getMultiplier(
-                pool.lastRewardBlock,
-                block.number
-            );
-            uint256 cakeReward = multiplier
-                .mul(rewardPerBlock)
-                .mul(pool.allocPoint)
-                .div(totalAllocPoint);
-            accTokenPerShare = accTokenPerShare.add(
-                cakeReward.mul(1e12).div(lpSupply)
-            );
-        }
-        return user.amount.mul(accTokenPerShare).div(1e12).sub(user.rewardDebt);
-    }
-
-    // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public {
-        PoolInfo storage pool = poolInfo[_pid];
-        if (block.number <= pool.lastRewardBlock) {
-            return;
-        }
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (lpSupply == 0) {
-            pool.lastRewardBlock = block.number;
-            return;
-        }
-        uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 cakeReward = multiplier
-            .mul(rewardPerBlock)
-            .mul(pool.allocPoint)
-            .div(totalAllocPoint);
-        pool.accTokenPerShare = pool.accTokenPerShare.add(
-            cakeReward.mul(1e12).div(lpSupply)
-        );
-        pool.lastRewardBlock = block.number;
-    }
-
-    // Update reward variables for all pools. Be careful of gas spending!
-    function massUpdatePools() public {
-        uint256 length = poolInfo.length;
-        for (uint256 pid = 0; pid < length; ++pid) {
-            updatePool(pid);
-        }
-    }
-
-    // Stake tokens to SmartChef
-    function deposit() public payable {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-
-        require(user.amount.add(msg.value) <= limitAmount, "exceed the top");
-        require(!user.inBlackList, "in black list");
-
-        updatePool(0);
-        if (user.amount > 0) {
-            uint256 pending = user
-                .amount
-                .mul(pool.accTokenPerShare)
-                .div(1e12)
-                .sub(user.rewardDebt);
-            if (pending > 0) {
-                rewardToken.safeTransfer(address(msg.sender), pending);
-            }
-        }
-        if (msg.value > 0) {
-            IWBNB(WBNB).deposit{value: msg.value}();
-            assert(IWBNB(WBNB).transfer(address(this), msg.value));
-            user.amount = user.amount.add(msg.value);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Deposit(msg.sender, msg.value);
-    }
-
-    function safeTransferBNB(address to, uint256 value) internal {
-        (bool success, ) = to.call{gas: 23000, value: value}("");
-        // (bool success,) = to.call{value:value}(new bytes(0));
-        require(success, "TransferHelper: ETH_TRANSFER_FAILED");
-    }
-
-    // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        require(user.amount >= _amount, "withdraw: not good");
-        updatePool(0);
-        uint256 pending = user.amount.mul(pool.accTokenPerShare).div(1e12).sub(
-            user.rewardDebt
-        );
-        if (pending > 0 && !user.inBlackList) {
-            rewardToken.safeTransfer(address(msg.sender), pending);
-        }
-        if (_amount > 0) {
-            user.amount = user.amount.sub(_amount);
-            IWBNB(WBNB).withdraw(_amount);
-            safeTransferBNB(address(msg.sender), _amount);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Withdraw(msg.sender, _amount);
-    }
-
-    // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
-        user.amount = 0;
-        user.rewardDebt = 0;
-    }
-
-    // Withdraw reward. EMERGENCY ONLY.
-    function emergencyRewardWithdraw(uint256 _amount) public onlyOwner {
-        require(
-            _amount < rewardToken.balanceOf(address(this)),
-            "not enough token"
-        );
-        rewardToken.safeTransfer(address(msg.sender), _amount);
-    }
-}
-
-interface IWBNB {
-    function deposit() external payable;
-
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function withdraw(uint256) external;
-}
-
-contract BnbStaking is Ownable {
-    using SafeMath for uint256;
-    using SafeBEP20 for IBEP20;
-
-    // Info of each user.
-    struct UserInfo {
-        uint256 amount; // How many LP tokens the user has provided.
-        uint256 rewardDebt; // Reward debt. See explanation below.
-        bool inBlackList;
-    }
-
-    // Info of each pool.
-    struct PoolInfo {
-        IBEP20 lpToken; // Address of LP token contract.
-        uint256 allocPoint; // How many allocation points assigned to this pool. Tokens to distribute per block.
-        uint256 lastRewardBlock; // Last block number that Token distribution occurs.
-        uint256 accTokenPerShare; // Accumulated Token per share, times 1e12. See below.
-    }
-
-    // The REWARD TOKEN
-    IBEP20 public rewardToken;
-
-    // adminAddress
-    address public adminAddress;
-
-    // WBNB
-    address public immutable WBNB;
-
-    // Token tokens created per block.
-    uint256 public rewardPerBlock;
-
-    // Info of each pool.
-    PoolInfo[] public poolInfo;
-    // Info of each user that stakes LP tokens.
-    mapping(address => UserInfo) public userInfo;
-    // limit 10 BNB here
-    uint256 public limitAmount = 10000000000000000000;
-    // Total allocation poitns. Must be the sum of all allocation points in all pools.
-    uint256 public totalAllocPoint = 0;
-    // The block number when Token mining starts.
-    uint256 public startBlock;
-    // The block number when Token mining ends.
-    uint256 public bonusEndBlock;
-
-    event Deposit(address indexed user, uint256 amount);
-    event Withdraw(address indexed user, uint256 amount);
-    event EmergencyWithdraw(address indexed user, uint256 amount);
-
-    constructor(
-        IBEP20 _lp,
-        IBEP20 _rewardToken,
-        uint256 _rewardPerBlock,
-        uint256 _startBlock,
-        uint256 _bonusEndBlock,
-        address _adminAddress,
-        address _wbnb
-    ) {
-        rewardToken = _rewardToken;
-        rewardPerBlock = _rewardPerBlock;
-        startBlock = _startBlock;
-        bonusEndBlock = _bonusEndBlock;
-        adminAddress = _adminAddress;
-        WBNB = _wbnb;
-
-        // staking pool
-        poolInfo.push(
-            PoolInfo({
-                lpToken: _lp,
-                allocPoint: 1000,
-                lastRewardBlock: startBlock,
-                accTokenPerShare: 0
-            })
-        );
-
-        totalAllocPoint = 1000;
-    }
-
-    modifier onlyAdmin() {
-        require(
-            msg.sender == adminAddress,
-            "admin: what are you doing in my swarm?"
-        );
+    modifier onlyIfVestingScheduleNotStarted() {
+        require(isStarted == false, "Vesting has Started!");
         _;
     }
 
-    receive() external payable {
-        assert(msg.sender == WBNB); // only accept BNB via fallback from the WBNB contract
+    /*
+     * @dev Creates a vesting contract.
+     * @param token_ address of the ERC20 token contract
+     */
+    constructor(address token_) {
+        require(token_ != address(0x0), "Token address wrong!");
+        _token = IERC20(token_);
     }
 
-    // Update admin address by the previous dev.
-    function setAdmin(address _adminAddress) public onlyOwner {
-        adminAddress = _adminAddress;
+    function createVestingSchedule(
+        uint256[] memory amounts,
+        uint256 splitDuration
+    ) public onlyOwner onlyIfVestingScheduleNotStarted {
+        for (
+            uint256 amountIndex = 0;
+            amountIndex < amounts.length;
+            amountIndex++
+        ) {
+            VestingSchedule storage _temp = vestingSchedules[amountIndex];
+            _temp.duration = amountIndex * splitDuration;
+            _temp.amountReleased = amounts[amountIndex];
+            _temp.revoked = false;
+            totalVestedAmount = totalVestedAmount + amounts[amountIndex];
+        }
+        totalVestedCount = amounts.length;
+        totalVestedAmountLeft = totalVestedAmount;
     }
 
-    function setBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = true;
+    function startVestingSchedule() public onlyOwner {
+        isStarted = true;
     }
 
-    function removeBlackList(address _blacklistAddress) public onlyAdmin {
-        userInfo[_blacklistAddress].inBlackList = false;
-    }
-
-    // Set the limit amount. Can only be called by the owner.
-    function setLimitAmount(uint256 _amount) public onlyOwner {
-        limitAmount = _amount;
-    }
-
-    // Return reward multiplier over the given _from to _to block.
-    function getMultiplier(uint256 _from, uint256 _to)
+    function addBeneficiary(address _beneficiary, uint256 _vestingRate)
         public
+        onlyOwner
+    {
+        uint256 totalAmount = _calculateFullAmountByVestedRate(_vestingRate);
+        require(
+            _token.balanceOf(address(this)) - totalAmount >= 0,
+            "Current contract amount insufficent!"
+        );
+        require(
+            startedTime + vestingSchedules[totalVestedCount - 1].duration >
+                getCurrentTime(),
+            "Current vesting has passed!"
+        );
+        require(
+            totalVestedAmountLeft - totalAmount > 0,
+            "Total amount left insufficents amount"
+        );
+        beneficiariesRate[_beneficiary] = _vestingRate;
+        for (
+            uint256 vestingScheduleIndex = 0;
+            vestingScheduleIndex < totalVestedCount;
+            vestingScheduleIndex++
+        ) {
+            VestingSchedule storage _temp = vestingSchedules[
+                vestingScheduleIndex
+            ];
+            _temp.beneficiariesAmount[
+                _beneficiary
+            ] = _calculateSingleAmountByVestedRate(
+                _vestingRate,
+                vestingScheduleIndex
+            );
+        }
+    }
+
+    function releaseToken(uint256 _vestingScheduleIndex)
+        public
+        nonReentrant
+        onlyIfVestingScheduleStarted
+    {
+        uint256 currentAmount = vestingSchedules[_vestingScheduleIndex]
+            .beneficiariesAmount[address(msg.sender)];
+        VestingSchedule storage _vestingSchedule = vestingSchedules[
+            _vestingScheduleIndex
+        ];
+        require(
+            currentAmount > 0,
+            "You are not beneficiary or current vested amount = 0 !"
+        );
+        require(
+            _vestingSchedule.amountReleased > currentAmount,
+            "current vested amount insufficent!"
+        );
+        require(
+            startedTime + _vestingSchedule.duration > getCurrentTime(),
+            "current vested amount insufficent!"
+        );
+        address payable beneficiaryPayable = payable(msg.sender);
+        _vestingSchedule.amountReleased =
+            _vestingSchedule.amountReleased -
+            currentAmount;
+        totalVestedAmount = totalVestedAmount - currentAmount;
+        _token.safeTransfer(beneficiaryPayable, currentAmount);
+        if (_vestingSchedule.amountReleased == 0) {
+            _vestingSchedule.revoked = true;
+        }
+        emit Released(currentAmount);
+    }
+
+    function _calculateCurrentVestingScheduleIndex()
+        internal
         view
         returns (uint256)
     {
-        if (_to <= bonusEndBlock) {
-            return _to.sub(_from);
-        } else if (_from >= bonusEndBlock) {
-            return 0;
-        } else {
-            return bonusEndBlock.sub(_from);
-        }
-    }
-
-    // View function to see pending Reward on frontend.
-    function pendingReward(address _user) external view returns (uint256) {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[_user];
-        uint256 accTokenPerShare = pool.accTokenPerShare;
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (block.number > pool.lastRewardBlock && lpSupply != 0) {
-            uint256 multiplier = getMultiplier(
-                pool.lastRewardBlock,
-                block.number
-            );
-            uint256 cakeReward = multiplier
-                .mul(rewardPerBlock)
-                .mul(pool.allocPoint)
-                .div(totalAllocPoint);
-            accTokenPerShare = accTokenPerShare.add(
-                cakeReward.mul(1e12).div(lpSupply)
-            );
-        }
-        return user.amount.mul(accTokenPerShare).div(1e12).sub(user.rewardDebt);
-    }
-
-    // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public {
-        PoolInfo storage pool = poolInfo[_pid];
-        if (block.number <= pool.lastRewardBlock) {
-            return;
-        }
-        uint256 lpSupply = pool.lpToken.balanceOf(address(this));
-        if (lpSupply == 0) {
-            pool.lastRewardBlock = block.number;
-            return;
-        }
-        uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 cakeReward = multiplier
-            .mul(rewardPerBlock)
-            .mul(pool.allocPoint)
-            .div(totalAllocPoint);
-        pool.accTokenPerShare = pool.accTokenPerShare.add(
-            cakeReward.mul(1e12).div(lpSupply)
-        );
-        pool.lastRewardBlock = block.number;
-    }
-
-    // Update reward variables for all pools. Be careful of gas spending!
-    function massUpdatePools() public {
-        uint256 length = poolInfo.length;
-        for (uint256 pid = 0; pid < length; ++pid) {
-            updatePool(pid);
-        }
-    }
-
-    // Stake tokens to SmartChef
-    function deposit() public payable {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-
-        require(user.amount.add(msg.value) <= limitAmount, "exceed the top");
-        require(!user.inBlackList, "in black list");
-
-        updatePool(0);
-        if (user.amount > 0) {
-            uint256 pending = user
-                .amount
-                .mul(pool.accTokenPerShare)
-                .div(1e12)
-                .sub(user.rewardDebt);
-            if (pending > 0) {
-                rewardToken.safeTransfer(address(msg.sender), pending);
+        uint256 currentTime = getCurrentTime();
+        for (
+            uint256 vestingScheduleIndex = 0;
+            vestingScheduleIndex < totalVestedCount;
+            vestingScheduleIndex++
+        ) {
+            if (
+                currentTime <
+                (startedTime + vestingSchedules[vestingScheduleIndex].duration)
+            ) {
+                return vestingScheduleIndex;
             }
         }
-        if (msg.value > 0) {
-            IWBNB(WBNB).deposit{value: msg.value}();
-            assert(IWBNB(WBNB).transfer(address(this), msg.value));
-            user.amount = user.amount.add(msg.value);
+        return totalVestedCount - 1;
+    }
+
+    function _calculateSingleAmountByVestedRate(
+        uint256 _vestingRate,
+        uint256 _vestingScheduleIndex
+    ) internal view returns (uint256) {
+        return
+            (_vestingRate *
+                vestingSchedules[_vestingScheduleIndex].amountReleased) / 100;
+    }
+
+    function _calculateFullAmountByVestedRate(uint256 _vestingRate)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 totalAmount = 0;
+        for (
+            uint256 vestingScheduleIndex = 0;
+            vestingScheduleIndex < totalVestedCount;
+            vestingScheduleIndex++
+        ) {
+            totalAmount =
+                totalAmount +
+                (_vestingRate *
+                    vestingSchedules[vestingScheduleIndex].amountReleased) /
+                100;
         }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Deposit(msg.sender, msg.value);
+        return totalAmount;
     }
 
-    function safeTransferBNB(address to, uint256 value) internal {
-        (bool success, ) = to.call{gas: 23000, value: value}("");
-        // (bool success,) = to.call{value:value}(new bytes(0));
-        require(success, "TransferHelper: ETH_TRANSFER_FAILED");
-    }
-
-    // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        require(user.amount >= _amount, "withdraw: not good");
-        updatePool(0);
-        uint256 pending = user.amount.mul(pool.accTokenPerShare).div(1e12).sub(
-            user.rewardDebt
-        );
-        if (pending > 0 && !user.inBlackList) {
-            rewardToken.safeTransfer(address(msg.sender), pending);
-        }
-        if (_amount > 0) {
-            user.amount = user.amount.sub(_amount);
-            IWBNB(WBNB).withdraw(_amount);
-            safeTransferBNB(address(msg.sender), _amount);
-        }
-        user.rewardDebt = user.amount.mul(pool.accTokenPerShare).div(1e12);
-
-        emit Withdraw(msg.sender, _amount);
-    }
-
-    // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
-        PoolInfo storage pool = poolInfo[0];
-        UserInfo storage user = userInfo[msg.sender];
-        pool.lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
-        user.amount = 0;
-        user.rewardDebt = 0;
-    }
-
-    // Withdraw reward. EMERGENCY ONLY.
-    function emergencyRewardWithdraw(uint256 _amount) public onlyOwner {
-        require(
-            _amount < rewardToken.balanceOf(address(this)),
-            "not enough token"
-        );
-        rewardToken.safeTransfer(address(msg.sender), _amount);
+    function getCurrentTime() internal view virtual returns (uint256) {
+        return block.timestamp;
     }
 }
