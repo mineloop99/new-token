@@ -14,6 +14,7 @@ networks:
     keyhash: '0x2ed0feb3e7fd2022120aa84fab1945545a9f2ffc9076fd6156fa96eaff4c1311'
     fee: 100000000000000000
     verify: False
+    recipient: "0x35Af6B31a61eC9F030849a3953394A69a1f9f9eC"
   rinkeby:
     vrf_coordinator: '0xb3dCcb4Cf7a26f6cf6B120Cf5A73875B7BBc655B'
     eth_usd_data_feed: '0x8A753747A1Fa494EC906cE90E9f37563A8AF630e'
