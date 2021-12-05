@@ -1,9 +1,10 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 import "./lib.sol";
 
-contract BnbStaking is Ownable {
+contract BnbStaking is Ownable, Pausable {
     using SafeMath for uint256;
     using SafeBEP20 for IBEP20;
 
@@ -149,7 +150,7 @@ contract BnbStaking is Ownable {
     }
 
     // Update reward variables of the given pool to be up-to-date.
-    function updatePool(uint256 _pid) public {
+    function updatePool(uint256 _pid) public whenNotPaused {
         PoolInfo storage pool = poolInfo[_pid];
         if (block.number <= pool.lastRewardBlock) {
             return;
@@ -171,7 +172,7 @@ contract BnbStaking is Ownable {
     }
 
     // Update reward variables for all pools. Be careful of gas spending!
-    function massUpdatePools() public {
+    function massUpdatePools() public whenNotPaused {
         uint256 length = poolInfo.length;
         for (uint256 pid = 0; pid < length; ++pid) {
             updatePool(pid);
@@ -179,7 +180,7 @@ contract BnbStaking is Ownable {
     }
 
     // Stake tokens to SmartChef
-    function deposit() public payable {
+    function deposit() public payable whenNotPaused {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
 
@@ -213,7 +214,7 @@ contract BnbStaking is Ownable {
     }
 
     // Withdraw tokens from STAKING.
-    function withdraw(uint256 _amount) public {
+    function withdraw(uint256 _amount) public whenNotPaused {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: insufficent amount");
@@ -235,7 +236,7 @@ contract BnbStaking is Ownable {
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public {
+    function emergencyWithdraw() public whenNotPaused {
         PoolInfo storage pool = poolInfo[0];
         UserInfo storage user = userInfo[msg.sender];
         pool.lpToken.safeTransfer(address(msg.sender), user.amount);
@@ -245,7 +246,7 @@ contract BnbStaking is Ownable {
     }
 
     // Withdraw reward. EMERGENCY ONLY.
-    function emergencyRewardWithdraw(uint256 _amount) public onlyOwner {
+    function emergencyRewardWithdraw(uint256 _amount) public whenNotPaused {
         require(
             _amount < rewardToken.balanceOf(address(this)),
             "insuffictent token"
@@ -268,5 +269,13 @@ contract BnbStaking is Ownable {
                 accTokenPerShare: _accTokenPerShare
             })
         );
+    }
+
+    function pause() public onlyAdmin {
+        _pause();
+    }
+
+    function unpause() public onlyAdmin {
+        _unpause();
     }
 }
