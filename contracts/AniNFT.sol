@@ -3,7 +3,7 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
-contract AniwarCollectible is ERC721URIStorage {
+contract AniwarNft is ERC721URIStorage {
     struct AniwarItem {
         uint256 itemId;
         string name;

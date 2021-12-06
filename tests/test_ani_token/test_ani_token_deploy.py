@@ -1,15 +1,15 @@
-from brownie import AniwarToken, network, config, exceptions, Contract
-from scripts.helper import get_account
+from brownie import AniwarToken, network, config, exceptions
 import pytest
 
+from scripts.deploy_token import deploy_token
+from scripts.helper import get_account
 
-def test_deploy_token():
+
+@pytest.mark.order1
+def test_ani_token_deploy():
     # Deploy Token
     account = get_account()
-    aniToken = AniwarToken.deploy(
-        {"from": account},
-        publish_source=config["networks"][network.show_active()]["verify"],
-    )
+    aniToken = deploy_token(account)
     # Transfer with paused()
     aniToken.pause()
     oldBalance = aniToken.balanceOf(account.address)
@@ -27,10 +27,3 @@ def test_deploy_token():
     )
     tx.wait(1)
     assert aniToken.balanceOf(account.address) < oldBalance2
-
-
-def test_aniwar_farm():
-    # Get Contract
-    account = get_account()
-    aniToken = AniwarToken[-1]
-    print(aniToken)
