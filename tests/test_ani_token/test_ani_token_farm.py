@@ -4,7 +4,7 @@ import pytest
 from scripts.helper import get_account
 
 
-@pytest.mark.order2
+@pytest.mark.second
 def test_ani_token_farm():
     # Get Contract
     account = get_account()

@@ -27,6 +27,7 @@ networks:
     key_hash: '0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4'
   ropsten:
     eth_usd_data_feed: '0x8468b2bDCE073A157E560AA4D9CcF6dB1DB98507'
+    verify: True
   mainnet-fork:
     eth_usd_data_feed: '0x9326BFA02ADD2366b30bacB125260Af641031331' #'0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
   bsc-test:
