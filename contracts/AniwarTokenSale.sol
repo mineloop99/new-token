@@ -141,7 +141,6 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
         public
         onlyOwner
     {
-        updateContract();
         require(_saleSchedules.length > 0, "No schedule yet!");
         require(_amount > 0, "amount must be > 0!");
         require(
@@ -181,6 +180,7 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
             beneficiary.initialized = true;
             beneficiariesCount++;
         }
+        updateContract();
     }
 
     function releaseToken(uint256 _amount)
@@ -237,6 +237,7 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
                     _totalAmountWithdrawable =
                         _totalAmountWithdrawable +
                         _tempValue;
+                    beneficiary.currentSplit = _currentSplitTemp;
                 }
             }
         }
@@ -278,10 +279,10 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
         if (_beneficiariesAddress.length == 0 || !_beneficiary.initialized) {
             return 0;
         }
-        if (_beneficiary.totalAmount / _beneficiariesAddress.length == 0) {
+        if (_beneficiary.totalAmount / _saleSchedules.length == 0) {
             return 1;
         }
-        return _beneficiary.totalAmount / _beneficiariesAddress.length;
+        return _beneficiary.totalAmount / _saleSchedules.length;
     }
 
     function removeSaleSchedule(uint256 index) internal onlyOwner {
