@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /*
  * @title TokenVesting
  */
-contract AniwarVestingSale is Ownable, ReentrancyGuard {
+contract AniwarTokenSale is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 private immutable _token;
 
@@ -53,7 +53,7 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
     uint256 private _currentSplit;
     uint256 private _splitDuration;
     // started when true
-    bool private isStarted;
+    bool public isStarted;
 
     event Released(uint256 amount);
 
@@ -80,9 +80,12 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
     }
 
     function startSaleSchedule() public onlyOwner {
+        require(
+            _token.balanceOf(address(this)) >= _totalAmountInitialized,
+            "Balance not enought to start schedule"
+        );
         isStarted = true;
         _startedTime = getCurrentTime();
-        uint256 _currentSplitTemp = 0;
         if (_beneficiariesAddress.length > 0) {
             for (
                 uint256 beneficiaryIndex = 0;
@@ -92,14 +95,7 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
                 Beneficiary storage beneficiary = beneficiaries[
                     _beneficiariesAddress[beneficiaryIndex]
                 ];
-                uint256 _tempValue = _calculateSingleSplitAmount(beneficiary) *
-                    (_currentSplitTemp - beneficiary.currentSplit);
-                beneficiary.amountWithdrawableTotal =
-                    beneficiary.amountWithdrawableTotal +
-                    _tempValue;
-                _totalAmountWithdrawable =
-                    _totalAmountWithdrawable +
-                    _tempValue;
+                beneficiary.startedTime = getCurrentTime();
             }
         }
     }
@@ -141,17 +137,12 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
         public
         onlyOwner
     {
+        updateContract();
         require(_saleSchedules.length > 0, "No schedule yet!");
         require(_amount > 0, "amount must be > 0!");
         require(
             _token.balanceOf(address(this)) >= _amount,
             "Current contract amount insufficent!"
-        );
-        require(
-            _startedTime + _saleSchedules[_saleSchedules.length - 1].duration >
-                getCurrentTime() ||
-                !isStarted,
-            "Current sale has passed!"
         );
         require(
             _totalAmountAssignable >= _amount,
@@ -160,8 +151,10 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
         _totalAmountLeft = _totalAmountLeft - _amount;
         _totalAmountAssignable = _totalAmountAssignable - _amount;
         Beneficiary storage beneficiary = beneficiaries[_beneficiaryAddress];
-        if (_startedTime > 0) {
-            beneficiary.startedTime = getCurrentTime();
+        if (isStarted) {
+            if (beneficiary.startedTime == 0) {
+                beneficiary.startedTime = getCurrentTime();
+            }
         } else {
             beneficiary.startedTime = 0;
         }
@@ -217,42 +210,56 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
     }
 
     function updateContract() public {
-        uint256 _currentSplitTemp = getSplitByTime(getCurrentTime());
-        if (_beneficiariesAddress.length > 0) {
-            for (
-                uint256 beneficiaryIndex = 0;
-                beneficiaryIndex < _beneficiariesAddress.length;
-                beneficiaryIndex++
-            ) {
-                Beneficiary storage beneficiary = beneficiaries[
-                    _beneficiariesAddress[beneficiaryIndex]
-                ];
-                if (beneficiary.currentSplit < _currentSplitTemp) {
+        if (isStarted) {
+            uint256 _currentSplitTemp = getSplitByTime(getCurrentTime());
+            if (_beneficiariesAddress.length > 0) {
+                uint256 _totalAmountWithdrawableTemp = 0;
+                for (
+                    uint256 beneficiaryIndex = 0;
+                    beneficiaryIndex < _beneficiariesAddress.length;
+                    beneficiaryIndex++
+                ) {
+                    Beneficiary storage beneficiary = beneficiaries[
+                        _beneficiariesAddress[beneficiaryIndex]
+                    ];
                     uint256 _tempValue = _calculateSingleSplitAmount(
                         beneficiary
-                    ) * (_currentSplitTemp - beneficiary.currentSplit);
-                    beneficiary.amountWithdrawableTotal =
-                        beneficiary.amountWithdrawableTotal +
-                        _tempValue;
-                    _totalAmountWithdrawable =
-                        _totalAmountWithdrawable +
-                        _tempValue;
+                    ) * _currentSplitTemp;
+                    beneficiary.amountWithdrawableTotal = _tempValue;
                     beneficiary.currentSplit = _currentSplitTemp;
+                    _totalAmountWithdrawableTemp =
+                        _totalAmountWithdrawableTemp +
+                        beneficiary.amountWithdrawableTotal;
                 }
+                _totalAmountWithdrawable = _totalAmountWithdrawableTemp;
+            }
+            if (_currentSplit < _currentSplitTemp) {
+                if (_currentSplit == 0) {
+                    _currentSplit = 1;
+                }
+                for (
+                    uint256 splitIndex = _currentSplit;
+                    splitIndex < _currentSplitTemp;
+                    splitIndex++
+                ) {
+                    _totalAmountAssignable =
+                        _totalAmountAssignable +
+                        _saleSchedules[splitIndex].amountReleased;
+                }
+                _currentSplit = _currentSplitTemp;
             }
         }
-        if (_currentSplit < _currentSplitTemp) {
-            for (
-                uint256 splitIndex = _currentSplit + 1;
-                splitIndex <= _currentSplitTemp;
-                splitIndex++
-            ) {
-                _totalAmountAssignable =
-                    _totalAmountAssignable +
-                    _saleSchedules[splitIndex].amountReleased;
-            }
-            _currentSplit = _currentSplitTemp;
-        }
+    }
+
+    function withdrawContractBalance(uint256 _amount) public onlyOwner {
+        require(_amount > 0, "Amount must be > 0!");
+        require(
+            !isStarted ||
+                _amount <=
+                (_token.balanceOf(address(this)) - _totalAmountInitialized),
+            "Amount is > total Left or schedule is started!"
+        );
+        _token.transfer(address(msg.sender), _amount);
     }
 
     function _checkAmountAgainstBalance(uint256[] memory _amounts)
@@ -298,17 +305,17 @@ contract AniwarVestingSale is Ownable, ReentrancyGuard {
         if (_time < _startedTime || !isStarted) {
             return 0;
         }
-        if ((_time - _startedTime) / _splitDuration > _saleSchedules.length) {
-            return _saleSchedules.length - 1;
+        if ((_time - _startedTime) / _splitDuration >= _saleSchedules.length) {
+            return _saleSchedules.length;
         }
-        return (_time - _startedTime) / _splitDuration;
+        return 1 + (_time - _startedTime) / _splitDuration;
     }
 
     function getBalance() public view returns (uint256) {
         return _token.balanceOf(address(this));
     }
 
-    function getCurrentTime() internal view returns (uint256) {
+    function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
     }
 }
