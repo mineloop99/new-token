@@ -251,7 +251,11 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
         }
     }
 
-    function withdrawContractBalance(uint256 _amount) public onlyOwner {
+    function withdrawContractBalance(uint256 _amount)
+        public
+        nonReentrant
+        onlyOwner
+    {
         require(_amount > 0, "Amount must be > 0!");
         require(
             !isStarted ||
