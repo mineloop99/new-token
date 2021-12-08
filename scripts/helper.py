@@ -1,4 +1,4 @@
-from brownie import accounts, config, network
+from brownie import accounts, config, network, AniwarVesting
 
 NETWORKS = ["ropsten", "rinkeby", "bsc-test"]
 # Rinkerby
@@ -10,6 +10,11 @@ def get_account():
         account = accounts.add(config["wallets"]["private_key"])
     account = accounts[0]
     return account
+
+
+def deploy_vesting_contract(account, aniwarToken):
+    vestingContract = AniwarVesting.deploy(aniwarToken, {"from": account})
+    return vestingContract
 
 
 def get_nft_url(
