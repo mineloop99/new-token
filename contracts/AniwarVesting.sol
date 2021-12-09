@@ -197,12 +197,13 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
         onlyOwner
     {
         require(
-            !isStarted ||
-                _amount <=
-                (_token.balanceOf(address(this)) -
-                    _vestingSchedulesTotalAmount),
+            !isStarted || _amount <= _vestingSchedulesTotalAmountLeft,
             "Amount exceeds balance and Init"
         );
+        _vestingSchedulesTotalAmount = _vestingSchedulesTotalAmount - _amount;
+        _vestingSchedulesTotalAmountLeft =
+            _vestingSchedulesTotalAmountLeft -
+            _amount;
         _token.safeTransfer(payable(owner()), _amount);
     }
 

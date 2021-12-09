@@ -13,45 +13,23 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 private immutable _token;
 
-    struct SaleSchedule {
-        // start time of the vesting period
-        uint256 duration;
-        // total amount of tokens to be released at the end of the vesting
-        uint256 amountReleased;
-    }
-
-    struct Beneficiary {
-        uint256 id;
-        // start time of the vesting period
-        uint256 startedTime;
-        // total amount of tokens has been withdrawn at the current time
+    struct Buyer {
+        uint256 totalAllowedAmount;
         uint256 totalAmount;
-        // total amount of tokens to be withdrawable at the current time
-        uint256 amountWithdrawableTotal;
         // total amount of tokens has been withdrawn at the current time
         uint256 amountHasBeenWithdrawn;
-        // currentSplit
-        uint256 currentSplit;
         // Initiliazed
         bool initialized;
     }
 
-    uint256 public beneficiariesCount;
-
-    // Store address of Beneficiaries
-    address[] private _beneficiariesAddress;
-    mapping(address => Beneficiary) public beneficiaries;
-    SaleSchedule[] private _saleSchedules;
-
-    uint256 private _startedTime;
-    uint256 private _totalAmountInitialized;
-    uint256 private _totalAmountLeft;
-    uint256 private _totalAmountAssignable;
-    uint256 private _totalAmountWithdrawable;
-    uint256 private _totalAmountHasBeenwithdrawn;
-
-    uint256 private _currentSplit;
-    uint256 private _splitDuration;
+    mapping(address => Buyer) public buyers;
+    uint256 public startedTime;
+    uint256 public totalSold;
+    uint256 public splitDuration;
+    uint256 public price;
+    uint256 public splitCount;
+    uint256 public initTokenAmount;
+    address[] public tokensAllowed;
     // started when true
     bool public isStarted;
 
@@ -67,252 +45,106 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
         _;
     }
 
+    modifier tokenAllowed(address tokenAddress_) {
+        bool isAllowed = false;
+        for(uint256 i=0;i<tokensAllowed.length;i++){
+            if(tokensAllowed[i] == tokenAddress_){
+                _;
+                isAllowed = true;
+            }
+        }
+        require(isAllowed,"Not Allowed Token");
+    }
+
     /*
      * @dev Creates a vesting contract.
      * @param token_ address of the ERC20 token contract
      * @param splitDuration_ time for end split
      */
-    constructor(address token_, uint256 splitDuration_) {
+     
+    constructor(address token_, uint256 splitDuration_,uint256 splitCount_, uint256 price_, address[] memory tokensAllowed_,uint256 _initTokenAmount) {
         require(token_ != address(0x0), "Token address wrong!");
+        price = price_;
+        splitCount = splitCount_;
+        tokensAllowed = tokensAllowed_;
+        initTokenAmount = _initTokenAmount;
         _token = IERC20(token_);
         isStarted = false;
-        _splitDuration = splitDuration_;
-    }
+        splitDuration = splitDuration_;
+    } 
 
-    function startSaleSchedule() public onlyOwner {
-        require(
-            _token.balanceOf(address(this)) >= _totalAmountInitialized,
-            "Balance not enought to start schedule"
-        );
+    function startSaleSchedule() public onlyOwner onlyIfSaleScheduleNotStarted {
         isStarted = true;
-        _startedTime = getCurrentTime();
-        if (_beneficiariesAddress.length > 0) {
-            for (
-                uint256 beneficiaryIndex = 0;
-                beneficiaryIndex < _beneficiariesAddress.length;
-                beneficiaryIndex++
-            ) {
-                Beneficiary storage beneficiary = beneficiaries[
-                    _beneficiariesAddress[beneficiaryIndex]
-                ];
-                beneficiary.startedTime = getCurrentTime();
-            }
-        }
+        startedTime = getCurrentTime();
     }
 
-    function createSaleSchedule(uint256[] memory _amounts)
-        public
-        onlyOwner
-        onlyIfSaleScheduleNotStarted
-    {
-        require(
-            _checkAmountAgainstBalance(_amounts),
-            "Total amount exceeds the balance!"
-        );
-        if (_saleSchedules.length == 0) {
-            _totalAmountAssignable = _totalAmountAssignable + _amounts[0];
+    function addBuyer(address buyerAddress,uint256 amount) public onlyOwner{
+        Buyer storage buyer = buyers[buyerAddress];
+        if(!buyer.initialized) {
+            buyer.initialized=true;
         }
-        for (
-            uint256 amountIndex = 0;
-            amountIndex < _amounts.length;
-            amountIndex++
-        ) {
-            require(
-                _amounts[amountIndex] > 0,
-                "There is an zero amount assign"
-            );
-            SaleSchedule memory _saleScheduleTemp = SaleSchedule(
-                amountIndex * _splitDuration,
-                _amounts[amountIndex]
-            );
-            _saleSchedules.push(_saleScheduleTemp);
-            _totalAmountInitialized =
-                _totalAmountInitialized +
-                _amounts[amountIndex];
-            _totalAmountLeft = _totalAmountLeft + _amounts[amountIndex];
-        }
+        buyer.totalAllowedAmount = buyer.totalAllowedAmount + amount;
     }
 
-    function addBeneficiary(address _beneficiaryAddress, uint256 _amount)
-        public
-        onlyOwner
-    {
-        updateContract();
-        require(_saleSchedules.length > 0, "No schedule yet!");
-        require(_amount > 0, "amount must be > 0!");
+    function buyToken(address _allowedToken, uint256 tokenAmount) public tokenAllowed(_allowedToken) nonReentrant {
+        Buyer storage buyer = buyers[msg.sender];
         require(
-            _token.balanceOf(address(this)) >= _amount,
-            "Current contract amount insufficent!"
+            buyer.totalAllowedAmount>= tokenAmount,
+            "Allowed amount insufficent!"
         );
         require(
-            _totalAmountAssignable >= _amount,
-            "Total amount left insufficents"
+            initTokenAmount-totalSold>= tokenAmount,
+            "Amount left insufficent!"
         );
-        _totalAmountLeft = _totalAmountLeft - _amount;
-        _totalAmountAssignable = _totalAmountAssignable - _amount;
-        Beneficiary storage beneficiary = beneficiaries[_beneficiaryAddress];
-        if (isStarted) {
-            if (beneficiary.startedTime == 0) {
-                beneficiary.startedTime = getCurrentTime();
-            }
-        } else {
-            beneficiary.startedTime = 0;
-        }
-        beneficiary.totalAmount = beneficiary.totalAmount + _amount;
-
-        if (beneficiariesCount > 0) {
-            if (beneficiary.id == 0 && !beneficiary.initialized) {
-                _beneficiariesAddress.push(_beneficiaryAddress);
-                beneficiary.id = beneficiariesCount;
-                beneficiary.initialized = true;
-                beneficiariesCount++;
-            }
-        } else {
-            _beneficiariesAddress.push(_beneficiaryAddress);
-            beneficiary.id = beneficiariesCount;
-            beneficiary.initialized = true;
-            beneficiariesCount++;
-        }
-        updateContract();
+        uint256 allowedTokenAmount= tokenAmount*price;
+        IERC20 token = IERC20(_allowedToken);
+        require(token.allowance(msg.sender, address(this)) >= allowedTokenAmount, "Allowance amount insufficent!");
+        token.transferFrom(msg.sender, address(this), allowedTokenAmount);
+        totalSold = totalSold + tokenAmount;
+        buyer.totalAmount = buyer.totalAmount + tokenAmount;
+        buyer.totalAllowedAmount = buyer.totalAllowedAmount -  tokenAmount;
     }
 
-    function releaseToken(uint256 _amount)
-        public
-        nonReentrant
-        onlyIfSaleScheduleStarted
-    {
-        updateContract();
-        Beneficiary storage beneficiary = beneficiaries[msg.sender];
-        require(_amount > 0, "amount must be greater than 0!");
-        require(
-            beneficiary.amountWithdrawableTotal > 0,
-            "You are not beneficiary or current withdrawable amount = 0!"
-        );
-        require(
-            _totalAmountWithdrawable >= beneficiary.amountWithdrawableTotal,
-            "current total withdrawable amount insufficent!"
-        );
-        require(
-            _amount <= beneficiary.amountWithdrawableTotal,
-            "current your withdrawable amount insufficent!"
-        );
-        _totalAmountWithdrawable = _totalAmountWithdrawable - _amount;
-        _totalAmountHasBeenwithdrawn = _totalAmountHasBeenwithdrawn + _amount;
-        beneficiary.amountWithdrawableTotal =
-            beneficiary.amountWithdrawableTotal -
-            _amount;
-        beneficiary.amountHasBeenWithdrawn =
-            beneficiary.amountHasBeenWithdrawn +
-            _amount;
+    function release() public onlyIfSaleScheduleStarted nonReentrant{
+        Buyer storage buyer = buyers[msg.sender];
+        uint256 _amount = calculateWithdrawableAmount(msg.sender);
+        require(_amount > 0,"Amount insufficents");
+        require(buyer.initialized, "Wut?");
         address payable beneficiaryPayable = payable(msg.sender);
         _token.safeTransfer(beneficiaryPayable, _amount);
+        buyer.amountHasBeenWithdrawn  = buyer.amountHasBeenWithdrawn + _amount;
         emit Released(_amount);
     }
 
-    function updateContract() public {
-        if (isStarted) {
-            uint256 _currentSplitTemp = getSplitByTime(getCurrentTime());
-            if (_beneficiariesAddress.length > 0) {
-                uint256 _totalAmountWithdrawableTemp = 0;
-                for (
-                    uint256 beneficiaryIndex = 0;
-                    beneficiaryIndex < _beneficiariesAddress.length;
-                    beneficiaryIndex++
-                ) {
-                    Beneficiary storage beneficiary = beneficiaries[
-                        _beneficiariesAddress[beneficiaryIndex]
-                    ];
-                    uint256 _tempValue = _calculateSingleSplitAmount(
-                        beneficiary
-                    ) * _currentSplitTemp;
-                    beneficiary.amountWithdrawableTotal = _tempValue;
-                    beneficiary.currentSplit = _currentSplitTemp;
-                    _totalAmountWithdrawableTemp =
-                        _totalAmountWithdrawableTemp +
-                        beneficiary.amountWithdrawableTotal;
-                }
-                _totalAmountWithdrawable = _totalAmountWithdrawableTemp;
-            }
-            if (_currentSplit < _currentSplitTemp) {
-                if (_currentSplit == 0) {
-                    _currentSplit = 1;
-                }
-                for (
-                    uint256 splitIndex = _currentSplit;
-                    splitIndex < _currentSplitTemp;
-                    splitIndex++
-                ) {
-                    _totalAmountAssignable =
-                        _totalAmountAssignable +
-                        _saleSchedules[splitIndex].amountReleased;
-                }
-                _currentSplit = _currentSplitTemp;
-            }
-        }
+    function calculateWithdrawableAmount(address _buyerAddress) public view returns(uint256) {
+        Buyer memory _buyer = buyers[_buyerAddress];
+        uint256 currentSplit = getSplitByTime(getCurrentTime()); 
+        uint256 totalWithdrawable = _buyer.totalAmount * currentSplit / splitCount;
+        return totalWithdrawable - _buyer.amountHasBeenWithdrawn;
     }
 
-    function withdrawContractBalance(uint256 _amount)
+
+    function withdrawContractBalance()
         public
         nonReentrant
         onlyOwner
     {
-        require(_amount > 0, "Amount must be > 0!");
-        require(
-            !isStarted ||
-                _amount <=
-                (_token.balanceOf(address(this)) - _totalAmountInitialized),
-            "Amount is > total Left or schedule is started!"
-        );
-        _token.transfer(address(msg.sender), _amount);
-    }
-
-    function _checkAmountAgainstBalance(uint256[] memory _amounts)
-        private
-        view
-        returns (bool)
-    {
-        uint256 totalAmount = 0;
-        for (
-            uint256 amountIndex = 0;
-            amountIndex < _amounts.length;
-            amountIndex++
-        ) {
-            totalAmount = totalAmount + _amounts[amountIndex];
+        for(uint256 i=0;i<tokensAllowed.length;i++){
+            uint256 balance= IERC20(tokensAllowed[i]).balanceOf((address(this)));
+            if(balance>0) {
+                IERC20(tokensAllowed[i]).transfer(msg.sender,balance);
+            }
         }
-        return _token.balanceOf(address(this)) >= totalAmount;
-    }
-
-    function _calculateSingleSplitAmount(Beneficiary memory _beneficiary)
-        private
-        view
-        returns (uint256)
-    {
-        if (_beneficiariesAddress.length == 0 || !_beneficiary.initialized) {
-            return 0;
-        }
-        if (_beneficiary.totalAmount / _saleSchedules.length == 0) {
-            return 1;
-        }
-        return _beneficiary.totalAmount / _saleSchedules.length;
-    }
-
-    function removeSaleSchedule(uint256 index) internal onlyOwner {
-        if (index >= _saleSchedules.length) return;
-
-        for (uint256 i = index; i < _saleSchedules.length - 1; i++) {
-            _saleSchedules[i] = _saleSchedules[i + 1];
-        }
-        delete _saleSchedules[_saleSchedules.length - 1];
     }
 
     function getSplitByTime(uint256 _time) public view returns (uint256) {
-        if (_time < _startedTime || !isStarted) {
+        if (_time < startedTime || !isStarted) {
             return 0;
         }
-        if ((_time - _startedTime) / _splitDuration >= _saleSchedules.length) {
-            return _saleSchedules.length;
+        if ((_time - startedTime) / splitDuration >= splitCount) {
+            return splitCount;
         }
-        return 1 + (_time - _startedTime) / _splitDuration;
+        return 1 + (_time - startedTime) / splitDuration;
     }
 
     function getBalance() public view returns (uint256) {
