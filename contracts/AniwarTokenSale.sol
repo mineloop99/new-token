@@ -47,13 +47,13 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
 
     modifier tokenAllowed(address tokenAddress_) {
         bool isAllowed = false;
-        for(uint256 i=0;i<tokensAllowed.length;i++){
-            if(tokensAllowed[i] == tokenAddress_){
+        for (uint256 i = 0; i < tokensAllowed.length; i++) {
+            if (tokensAllowed[i] == tokenAddress_) {
                 _;
                 isAllowed = true;
             }
         }
-        require(isAllowed,"Not Allowed Token");
+        require(isAllowed, "Not Allowed Token");
     }
 
     /*
@@ -61,8 +61,15 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
      * @param token_ address of the ERC20 token contract
      * @param splitDuration_ time for end split
      */
-     
-    constructor(address token_, uint256 splitDuration_,uint256 splitCount_, uint256 price_, address[] memory tokensAllowed_,uint256 _initTokenAmount) {
+
+    constructor(
+        address token_,
+        uint256 splitDuration_,
+        uint256 splitCount_,
+        uint256 price_,
+        address[] memory tokensAllowed_,
+        uint256 _initTokenAmount
+    ) {
         require(token_ != address(0x0), "Token address wrong!");
         price = price_;
         splitCount = splitCount_;
@@ -71,68 +78,84 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
         _token = IERC20(token_);
         isStarted = false;
         splitDuration = splitDuration_;
-    } 
-
-    function startSaleSchedule() public onlyOwner onlyIfSaleScheduleNotStarted {
-        isStarted = true;
-        startedTime = getCurrentTime();
     }
 
-    function addBuyer(address buyerAddress,uint256 amount) public onlyOwner{
+    function startSaleSchedule(uint256 _time)
+        public
+        onlyOwner
+        onlyIfSaleScheduleNotStarted
+    {
+        isStarted = true;
+        startedTime = _time + getCurrentTime();
+    }
+
+    function addBuyer(address buyerAddress, uint256 amount) public onlyOwner {
         Buyer storage buyer = buyers[buyerAddress];
-        if(!buyer.initialized) {
-            buyer.initialized=true;
+        if (!buyer.initialized) {
+            buyer.initialized = true;
         }
         buyer.totalAllowedAmount = buyer.totalAllowedAmount + amount;
     }
 
-    function buyToken(address _allowedToken, uint256 tokenAmount) public tokenAllowed(_allowedToken) nonReentrant {
+    function buyToken(address _allowedToken, uint256 tokenAmount)
+        public
+        tokenAllowed(_allowedToken)
+        nonReentrant
+    {
         Buyer storage buyer = buyers[msg.sender];
         require(
-            buyer.totalAllowedAmount>= tokenAmount,
+            buyer.totalAllowedAmount >= tokenAmount,
             "Allowed amount insufficent!"
         );
         require(
-            initTokenAmount-totalSold>= tokenAmount,
+            initTokenAmount - totalSold >= tokenAmount,
             "Amount left insufficent!"
         );
-        uint256 allowedTokenAmount= tokenAmount*price;
+        uint256 allowedTokenAmount = tokenAmount * price;
         IERC20 token = IERC20(_allowedToken);
-        require(token.allowance(msg.sender, address(this)) >= allowedTokenAmount, "Allowance amount insufficent!");
+        require(
+            token.allowance(msg.sender, address(this)) >= allowedTokenAmount,
+            "Allowance amount insufficent!"
+        );
         token.transferFrom(msg.sender, address(this), allowedTokenAmount);
-        totalSold = totalSold + tokenAmount;
-        buyer.totalAmount = buyer.totalAmount + tokenAmount;
-        buyer.totalAllowedAmount = buyer.totalAllowedAmount -  tokenAmount;
+        totalSold = totalSold + tokenAmount * 1 ether;
+        buyer.totalAmount = buyer.totalAmount + tokenAmount * 1 ether;
+        buyer.totalAllowedAmount =
+            buyer.totalAllowedAmount -
+            tokenAmount *
+            1 ether;
     }
 
-    function release() public onlyIfSaleScheduleStarted nonReentrant{
+    function release() public onlyIfSaleScheduleStarted nonReentrant {
         Buyer storage buyer = buyers[msg.sender];
         uint256 _amount = calculateWithdrawableAmount(msg.sender);
-        require(_amount > 0,"Amount insufficents");
+        require(_amount > 0, "Amount insufficents");
         require(buyer.initialized, "Wut?");
         address payable beneficiaryPayable = payable(msg.sender);
         _token.safeTransfer(beneficiaryPayable, _amount);
-        buyer.amountHasBeenWithdrawn  = buyer.amountHasBeenWithdrawn + _amount;
+        buyer.amountHasBeenWithdrawn = buyer.amountHasBeenWithdrawn + _amount;
         emit Released(_amount);
     }
 
-    function calculateWithdrawableAmount(address _buyerAddress) public view returns(uint256) {
+    function calculateWithdrawableAmount(address _buyerAddress)
+        public
+        view
+        returns (uint256)
+    {
         Buyer memory _buyer = buyers[_buyerAddress];
-        uint256 currentSplit = getSplitByTime(getCurrentTime()); 
-        uint256 totalWithdrawable = _buyer.totalAmount * currentSplit / splitCount;
+        uint256 currentSplit = getSplitByTime(getCurrentTime());
+        uint256 totalWithdrawable = (_buyer.totalAmount * currentSplit) /
+            splitCount;
         return totalWithdrawable - _buyer.amountHasBeenWithdrawn;
     }
 
-
-    function withdrawContractBalance()
-        public
-        nonReentrant
-        onlyOwner
-    {
-        for(uint256 i=0;i<tokensAllowed.length;i++){
-            uint256 balance= IERC20(tokensAllowed[i]).balanceOf((address(this)));
-            if(balance>0) {
-                IERC20(tokensAllowed[i]).transfer(msg.sender,balance);
+    function withdrawContractBalance() public nonReentrant onlyOwner {
+        for (uint256 i = 0; i < tokensAllowed.length; i++) {
+            uint256 balance = IERC20(tokensAllowed[i]).balanceOf(
+                (address(this))
+            );
+            if (balance > 0) {
+                IERC20(tokensAllowed[i]).transfer(msg.sender, balance);
             }
         }
     }
