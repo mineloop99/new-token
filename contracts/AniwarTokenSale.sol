@@ -27,7 +27,7 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
     uint256 public totalSold;
     uint256 public splitDuration;
     uint256 public price;
-    uint256 public splitCount;
+    uint256 public constant splitCount = 12;
     uint256 public initTokenAmount;
     address[] public tokensAllowed;
     // started when true
@@ -65,14 +65,12 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
     constructor(
         address token_,
         uint256 splitDuration_,
-        uint256 splitCount_,
         uint256 price_,
         address[] memory tokensAllowed_,
         uint256 _initTokenAmount
     ) {
         require(token_ != address(0x0), "Token address wrong!");
         price = price_;
-        splitCount = splitCount_;
         tokensAllowed = tokensAllowed_;
         initTokenAmount = _initTokenAmount;
         _token = IERC20(token_);
@@ -86,7 +84,7 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
         onlyIfSaleScheduleNotStarted
     {
         isStarted = true;
-        startedTime = _time + getCurrentTime();
+        startedTime = _time;
     }
 
     function addBuyer(address buyerAddress, uint256 amount) public onlyOwner {
@@ -176,5 +174,13 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
 
     function getCurrentTime() public view returns (uint256) {
         return block.timestamp;
+    }
+
+    function getTimes() public view returns (uint256[splitCount] memory) {
+        uint256[splitCount] memory times;
+        for (uint256 i = 0; i < splitCount; i++) {
+            times[i] = startedTime + (splitDuration * i);
+        }
+        return times;
     }
 }

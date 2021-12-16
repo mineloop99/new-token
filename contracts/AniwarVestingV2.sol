@@ -17,6 +17,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
     struct Beneficiary {
         uint256 totalAmount;
         uint256 TGEAmount;
+        uint256 cliff;
         uint256 totalAmountHasBeenWithdrawn;
         bool isInitialized;
     }
@@ -24,7 +25,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
     bool private _isStarted;
     uint256 private _startedTime;
     uint256 private immutable _splitDuration;
-    uint256 private immutable _splitCounter;
+    uint256 private immutable _splitCount;
     uint256 private _vestingSchedulesInitializedAmount;
     uint256 private _vestingSchedulesInitializedAmountLeft;
 
@@ -46,14 +47,14 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
     constructor(
         address token_,
         uint256 splitDuration_,
-        uint256 splitCounter_,
+        uint256 splitCount_,
         uint256 initializedAmount_
     ) {
         require(token_ != address(0x0), "Token address wrong!");
         _token = IERC20(token_);
         _splitDuration = splitDuration_;
-        require(splitCounter_ > 0, "Split counter must be > 0");
-        _splitCounter = splitCounter_;
+        require(splitCount_ > 0, "Split counter must be > 0");
+        _splitCount = splitCount_;
         _vestingSchedulesInitializedAmount = initializedAmount_;
         _vestingSchedulesInitializedAmountLeft = initializedAmount_;
     }
@@ -61,6 +62,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
     // _TGERatio is a First release when schedule started: _TGERatio = %
     function addBeneficiary(
         address _beneficiary,
+        uint256 _cliff,
         uint256 _amount,
         uint256 _TGERatio
     ) public onlyOwner onlyIfVestingScheduleNotStarted {
@@ -68,13 +70,15 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
             _amount <= _vestingSchedulesInitializedAmountLeft,
             "TokenVesting: cannot add beneficiary  because not sufficient tokens"
         );
-        require(_TGERatio < 100, "Rate must less than 100%");
         require(_amount > 0, "TokenVesting: amount must be > 0");
+        require(_cliff < _splitCount, "cliff must less than sum of split");
+        require(_TGERatio < 100, "Rate must less than 100%");
         Beneficiary storage beneficiary = beneficiaries[_beneficiary];
         if (!beneficiary.isInitialized) {
             beneficiary.isInitialized = true;
             _beneficiariesAddress.push(_beneficiary);
         }
+        beneficiary.cliff = _cliff;
         beneficiary.totalAmount += _amount;
         beneficiary.TGEAmount += (_amount * _TGERatio) / 100;
         _vestingSchedulesInitializedAmountLeft -= _amount;
@@ -91,7 +95,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
             "Amount exceeds balance and Init"
         );
         _isStarted = true;
-        _startedTime = getCurrentTime() + _time;
+        _startedTime = _time;
         emit Begin();
     }
 
@@ -148,39 +152,22 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
             return 0;
         }
         uint256 currentSplit = (currentTime - _startedTime) / _splitDuration;
-        if (currentSplit >= _splitCounter) {
-            currentSplit = _splitCounter;
+        if (currentSplit >= _splitCount) {
+            currentSplit = _splitCount;
         }
         if (currentSplit == 0) {
             currentSplit = 1;
         }
+        if (currentSplit < beneficiary.cliff) {
+            return 0;
+        }
         uint256 singleSplitAmount = (beneficiary.totalAmount -
-            beneficiary.TGEAmount) / (_splitCounter - 1);
+            beneficiary.TGEAmount) / (_splitCount - 1 - beneficiary.cliff);
         return
             singleSplitAmount *
-            (currentSplit - 1) +
+            (currentSplit - 1 - beneficiary.cliff) +
             beneficiary.TGEAmount -
             beneficiary.totalAmountHasBeenWithdrawn;
-    }
-
-    function withdrawContractBalance(uint256 _amount)
-        public
-        nonReentrant
-        onlyOwner
-    {
-        require(
-            !_isStarted ||
-                _amount <=
-                (getBalance() - _vestingSchedulesInitializedAmountLeft),
-            "Amount exceeds balance and Init"
-        );
-        _vestingSchedulesInitializedAmount =
-            _vestingSchedulesInitializedAmount -
-            _amount;
-        _vestingSchedulesInitializedAmountLeft =
-            _vestingSchedulesInitializedAmountLeft -
-            _amount;
-        _token.safeTransfer(payable(owner()), _amount);
     }
 
     function getContractInfo()
@@ -199,7 +186,7 @@ contract AniwarVesting is Ownable, ReentrancyGuard {
             _isStarted,
             _startedTime,
             _splitDuration,
-            _splitCounter,
+            _splitCount,
             _vestingSchedulesInitializedAmount,
             _vestingSchedulesInitializedAmountLeft
         );
