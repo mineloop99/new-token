@@ -12,6 +12,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract AniwarTokenSale is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 private immutable _token;
+    address public constant burnAddress =
+        0x000000000000000000000000000000000000dEaD;
 
     struct Buyer {
         uint256 totalAllowedAmount;
@@ -147,13 +149,13 @@ contract AniwarTokenSale is Ownable, ReentrancyGuard {
         return totalWithdrawable - _buyer.amountHasBeenWithdrawn;
     }
 
-    function withdrawContractBalance() public nonReentrant onlyOwner {
+    function burnContractBalanceLeft() public nonReentrant onlyOwner {
         for (uint256 i = 0; i < tokensAllowed.length; i++) {
             uint256 balance = IERC20(tokensAllowed[i]).balanceOf(
                 (address(this))
             );
             if (balance > 0) {
-                IERC20(tokensAllowed[i]).transfer(msg.sender, balance);
+                IERC20(tokensAllowed[i]).transfer(burnAddress, balance);
             }
         }
     }
