@@ -19,13 +19,11 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
     // Info of each pool.
     struct PoolInfo {
         IERC20 lpToken; // Address of LP token contract.
-        uint256 apy; // Rate of token per year apy/100
+        uint256 apy; // Rate of token per year apy/1000
         uint256 startTime;
         uint256 endTime;
     }
 
-    // recipient address.
-    address public recipient;
     // Bonus muliplier for early ani makers.
     uint256 public BONUS_MULTIPLIER = 1;
 
@@ -41,18 +39,16 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
 
     constructor(
         IERC20 _aniToken,
-        address _recipient,
         uint256 _apy,
         uint256 _startTime
     ) {
-        recipient = _recipient;
-
+        uint256 startTime = block.timestamp + _startTime;
         // staking pool
         poolInfo = PoolInfo({
             lpToken: _aniToken,
             apy: _apy,
-            startTime: block.timestamp + _startTime,
-            endTime: 0
+            startTime: startTime,
+            endTime: startTime + 31556926 // plus one year
         });
     }
 
@@ -72,8 +68,9 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
     }
 
     // Stake Ani tokens to AniPool
-    function enterStaking(uint256 _amount) public {
+    function enterStaking(uint256 _amount) public nonReentrant {
         PoolInfo storage pool = poolInfo;
+        require(pool.endTime > getCurrentTime(), "Time: Farm has ended");
         UserInfo storage user = userInfo[msg.sender];
         if (_amount > 0) {
             pool.lpToken.safeTransferFrom(
@@ -84,36 +81,38 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
             user.amount = user.amount + _amount;
         }
         user.timeLastStaked = block.timestamp;
-        user.rewardDebt += calculateRewardDebt(
-            user.timeLastStaked,
-            getCurrentTime(),
-            user.amount
-        );
 
         emit EnterStaking(msg.sender, _amount);
     }
 
     // Withdraw Ani tokens from STAKING.
-    function leaveStaking(uint256 _amount) public whenNotPaused {
+    function leaveStaking(uint256 _amount) public whenNotPaused nonReentrant {
         PoolInfo storage pool = poolInfo;
+        updateUser(msg.sender);
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
         if (_amount > 0) {
             user.amount = user.amount - _amount;
             pool.lpToken.safeTransfer(msg.sender, _amount);
         }
-        user.timeLastStaked = block.timestamp;
+        emit LeaveStaking(msg.sender, _amount);
+    }
+
+    function updateUser(address _userAddress) public {
+        if (getCurrentTime() >= poolInfo.endTime) {
+            return;
+        }
+        UserInfo storage user = userInfo[_userAddress];
         user.rewardDebt += calculateRewardDebt(
             user.timeLastStaked,
             getCurrentTime(),
             user.amount
         );
-
-        emit LeaveStaking(msg.sender, _amount);
     }
 
     // ClaimAllReward
     function claimReward() public whenNotPaused nonReentrant {
+        updateUser(msg.sender);
         UserInfo storage user = userInfo[msg.sender];
         require(user.rewardDebt > 0, "Reward Amount: wut?");
         poolInfo.lpToken.safeTransfer(msg.sender, user.rewardDebt);
@@ -139,13 +138,7 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
         uint256 multiplier = (_to - _from) * BONUS_MULTIPLIER;
         uint256 numberOfDays = multiplier / 86400; // 1 Day = 86400 seconds
         uint256 apyPerDay = (poolInfo.apy * 1000) / 365;
-        return _userAmount * (numberOfDays / 1000) * (apyPerDay / 100);
-    }
-
-    // Update recipient address by the previous dev.
-    function changeRecipient(address _recipient) public {
-        require(msg.sender == recipient, "dev: wut?");
-        recipient = _recipient;
+        return (_userAmount * numberOfDays * apyPerDay) / (1000 * 1000);
     }
 
     // Safe ani transfer function, just in case if rounding error causes pool to not have enough CAKEs.
