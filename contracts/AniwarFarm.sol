@@ -43,6 +43,7 @@ contract AniwarFarm is Ownable {
     mapping(address => address) public tokenDataFeedMapping;
     address[] public stakers;
     address[] public allowedTokens;
+    mapping(address => uint256) public stakingBnbBalance;
     IERC20 public token;
 
     constructor(address _tokenAddress) {
@@ -110,14 +111,26 @@ contract AniwarFarm is Ownable {
         return (uint256(price), decimals);
     }
 
-    function stakeTokens(uint256 _amount, address _token) public {
+    function stakeTokens(uint256 _amount, address _token) public payable {
         require(_amount > 0, "amount must be more than 0!");
         require(tokenIsAllowed(_token), "Token is currently not allowed!");
+        require(
+            IERC20(_token).allowance(msg.sender, address(this)) >= _amount,
+            "Token exceeds allowance!"
+        );
         IERC20(_token).transferFrom(msg.sender, address(this), _amount);
         updateUniqueTokensStaked(msg.sender, _token);
         stakingBalance[_token][msg.sender] =
             stakingBalance[_token][msg.sender] +
             _amount;
+        if (uniqueTokensStaked[msg.sender] == 1) {
+            stakers.push(msg.sender);
+        }
+    }
+
+    function stakeBnb() public payable {
+        require(msg.value > 0, "amount must be more than 0!");
+        stakingBnbBalance[msg.sender] += msg.value;
         if (uniqueTokensStaked[msg.sender] == 1) {
             stakers.push(msg.sender);
         }

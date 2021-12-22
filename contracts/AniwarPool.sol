@@ -69,11 +69,14 @@ contract AniwarPool is Ownable, Pausable, ReentrancyGuard {
 
     // Stake Ani tokens to AniPool
     function enterStaking(uint256 _amount) public nonReentrant {
-        PoolInfo storage pool = poolInfo;
-        require(pool.endTime > getCurrentTime(), "Time: Farm has ended");
+        require(poolInfo.endTime > getCurrentTime(), "Time: Farm has ended");
+        require(
+            poolInfo.lpToken.allowance(msg.sender, address(this)) >= _amount,
+            "Allowance: Not enough Allowance"
+        );
         UserInfo storage user = userInfo[msg.sender];
         if (_amount > 0) {
-            pool.lpToken.safeTransferFrom(
+            poolInfo.lpToken.safeTransferFrom(
                 address(msg.sender),
                 address(this),
                 _amount

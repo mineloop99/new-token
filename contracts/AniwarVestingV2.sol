@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * @title TokenVesting
  */
-contract AniwarVesting is Ownable, ReentrancyGuard {
+contract AniwarVestingV2 is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
     // address of the ERC20 token
     IERC20 private immutable _token;
