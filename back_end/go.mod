@@ -1,4 +1,4 @@
-module github.com/mineloop99/ani-blockchain-server
+module github.com/mineloop99/new-token/back_end
 
 go 1.17
 
@@ -6,6 +6,7 @@ require (
 	github.com/btcsuite/btcd v0.20.1-beta // indirect
 	github.com/ethereum/go-ethereum v1.10.15 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
+	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect

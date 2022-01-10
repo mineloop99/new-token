@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/mineloop99/ani-blockchain-server/features/nft/nft_pb"
-	"github.com/mineloop99/ani-blockchain-server/utils"
+	"github.com/mineloop99/new-token/back_end/features/nft/nft_pb"
+	"github.com/mineloop99/new-token/back_end/utils"
 	"google.golang.org/grpc"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/mineloop99/ani-blockchain-server/features/reward/reward_pb"
+	"github.com/mineloop99/new-token/back_end/features/reward/reward_pb"
 	"google.golang.org/grpc"
 )
 

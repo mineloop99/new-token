@@ -1,8 +1,6 @@
 {
-  "name": "ani-blockchain-server",
-  "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/mineloop99/ani-blockchain-server.git",
+  "name": "back_end",
+  "version": "1.0.0", 
   "author": "huynhhung171099 <huynhhung171099@gmail.com>",
   "license": "MIT",
   "scripts": {

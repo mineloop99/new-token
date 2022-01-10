@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/mineloop99/ani-blockchain-server/features/reward"
+	"github.com/mineloop99/new-token/back_end/features/reward"
 
 	"google.golang.org/grpc"
 )

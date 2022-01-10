@@ -34,6 +34,7 @@ func GetConfig(providePath string) (*Config, error) {
 		return nil, err
 	}
 	fmt.Println(string(abi))
+	fmt.Println(string(bin))
 	return &Config{
 		Host:       viper.GetString("host"),
 		Port:       viper.GetString("port"),
