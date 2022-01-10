@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "/nft_pb"; 
+
+package nft_pb;
+
+// The greeting service definition.
+service NftService {
+  // Sends a Random Reward
+  rpc GetNftOwnership (GetNftOwnershipRequest) returns (GetNftOwnershipResponse);
+}
+// The request message containing the user's name.
+message GetNftOwnershipRequest {
+  string token_id = 1;
+}
+
+// The response message containing the greetings
+message GetNftOwnershipResponse {
+  string owner = 1;
+}

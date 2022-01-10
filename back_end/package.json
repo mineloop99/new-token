@@ -1,0 +1,13 @@
+{
+  "name": "ani-blockchain-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mineloop99/ani-blockchain-server.git",
+  "author": "huynhhung171099 <huynhhung171099@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "gen": "(yarn gen:nft && yarn gen:reward)", 
+    "gen:nft": "(cd features/nft && ./gen.bat)", 
+    "gen:reward": "(cd features/reward && ./gen.bat)"
+  }
+}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "/reward_pb"; 
+
+package reward_pb;
+
+// The greeting service definition.
+service RewardService {
+  // Sends a Random Reward
+  rpc GetRewardByRandom (GetRewardByRandomRequest) returns (GetRewardByRandomResponse) {}
+}
+// The request message containing the user's name.
+message GetRewardByRandomRequest {
+  int64 number = 1;
+}
+
+// The response message containing the greetings
+message GetRewardByRandomResponse {
+  string message = 1;
+}
