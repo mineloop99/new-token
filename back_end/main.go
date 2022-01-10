@@ -9,6 +9,6 @@ const host string = "127.0.0.1"
 const port string = ":50001"
 
 func main() {
+	utils.GetConfig("./")
 	server.InitServer(host, port)
-	utils.GetConfig(".")
 }

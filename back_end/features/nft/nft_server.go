@@ -19,7 +19,7 @@ func RewardRegister(s grpc.ServiceRegistrar) {
 }
 
 func (*Server) GetNftOwnership(ctx context.Context, in *nft_pb.GetNftOwnershipRequest) (*nft_pb.GetNftOwnershipResponse, error) {
-	config, err := utils.GetConfig("../../contracts")
+	config, err := utils.GetConfig("../../")
 	if err != nil {
 		log.Fatalf("Cannot get config: %v", err)
 	}
