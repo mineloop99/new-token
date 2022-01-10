@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/mineloop99/new-token/back_end/features/nft/nft_pb"
 	"github.com/mineloop99/new-token/back_end/utils"
 	"google.golang.org/grpc"
@@ -19,15 +18,12 @@ func RewardRegister(s grpc.ServiceRegistrar) {
 }
 
 func (*Server) GetNftOwnership(ctx context.Context, in *nft_pb.GetNftOwnershipRequest) (*nft_pb.GetNftOwnershipResponse, error) {
-	config, err := utils.GetConfig("../../")
+	_, err := utils.GetConfig("../../")
 	if err != nil {
-		log.Fatalf("Cannot get config: %v", err)
+		log.Fatalf("GetNftOwnerShip: Cannot get config: %v", err)
 	}
 	tokenId := in.GetTokenId()
-	_, err = ethclient.Dial(config.NodeUrl)
-	if err != nil {
-		log.Fatalf("Cannot Connect to ethclient: %v", err)
-	}
+
 	res := "Random Number is: " + tokenId
 	return &nft_pb.GetNftOwnershipResponse{
 		Owner: res,

@@ -1,0 +1,1 @@
+export { useContractFunction } from "./useContractFunction";
