@@ -1,5 +1,4 @@
 {
-    "solidity.defaultCompiler": "localNodeModule",
     "solidity.compileUsingRemoteVersion": "v0.8.10+commit.fc410830",
     "solidity.enableLocalNodeCompiler": false,
     "solidity.compileUsingLocalVersion": "d:\\Github\\new_token\\soljson-v0.8.10+commit.fc410830.js"

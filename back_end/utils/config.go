@@ -25,21 +25,35 @@ func GetConfig(providePath string) (*Config, error) {
 	if err != nil {               // Handle errors reading the config file
 		return nil, err
 	}
-	abi, err := os.ReadFile(providePath + "/AniWorldToken.abi")
-	if err != nil {
-		return nil, err
+	abi := make(chan string)
+	bin := make(chan string)
+	errC := make(chan error)
+	go func() {
+		_abi, err := os.ReadFile(providePath + "/AniWorldToken.abi")
+		if err != nil {
+			errC <- err
+		}
+		abi <- string(_abi)
+	}()
+	go func() {
+		_bin, err := os.ReadFile(providePath + "/AniWorldToken.bin")
+		if err != nil {
+			errC <- err
+		}
+		bin <- string(_bin)
+	}()
+
+	if err = <-errC; err != nil {
+		panic(err)
 	}
-	bin, err := os.ReadFile(providePath + "/AniWorldToken.bin")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(abi))
-	fmt.Println(string(bin))
+	fmt.Println(string(<-abi))
+	fmt.Println(string(<-bin))
 	return &Config{
 		Host:       viper.GetString("host"),
 		Port:       viper.GetString("port"),
 		NodeUrl:    viper.GetString("nodeUrl"),
 		PrivateKey: viper.GetString("privateKey"),
-		Abi:        string(abi),
+		Abi:        string("asdsa"),
+		Bin:        "sda",
 	}, nil
 }

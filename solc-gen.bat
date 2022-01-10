@@ -1,0 +1,1 @@
+start abigen -sol ./contracts/Aniwar.sol -pkg AniwarToken -out ./bin/
