@@ -9,10 +9,10 @@ import (
 
 func InitServer(host string, port string) {
 	var s, lis = registerServer(host, port)
-
 	go func() {
+		fmt.Printf("Server listening at %s:%s\n", host, port)
 		if err := s.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			log.Fatalf("Failed to serve: %v", err)
 		}
 	}()
 	ch := make(chan os.Signal, 1)

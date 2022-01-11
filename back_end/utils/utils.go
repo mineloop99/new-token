@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -25,6 +26,7 @@ type Config struct {
 	Host            string
 	Port            string
 	NodeUrl         string
+	AccountAddress  string
 	PrivateKey      string
 	AniTokenAddress string
 	Client          *ethclient.Client
@@ -33,10 +35,7 @@ type Config struct {
 
 var config Config
 
-func GetConfig(providePath string) (*Config, error) {
-	if config.Host != "" {
-		return &config, nil
-	}
+func InitConfig(providePath string) error {
 	viper.SetConfigName("config") // name of config file (without extension)
 	viper.SetConfigType("yaml")   // REQUIRED if the config file does not have the extension in the name
 	viper.AddConfigPath("../")    // path to look for the config file in
@@ -49,61 +48,73 @@ func GetConfig(providePath string) (*Config, error) {
 	if err != nil {
 		log.Fatalf("Config: Cannot Connect to node url: %v", err)
 	}
-	// Open our jsonFile
-	jsonAbiFile, err := os.Open(providePath + "chain-info/contracts/AniwarToken.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-		log.Fatalf("Config: Cannot Open ABI json file: %v", err)
-	}
-	defer jsonAbiFile.Close()
+	aniABIC := make(chan abi.ABI)
+	mapResultC := make(chan string)
+	go func() {
+		// Open our jsonFile
+		jsonAbiFile, err := os.Open(providePath + "chain-info/contracts/AniwarToken.json")
+		// if we os.Open returns an error then handle it
+		if err != nil {
+			log.Fatalf("Config: Cannot Open ABI json file: %v", err)
+		}
+		defer jsonAbiFile.Close()
 
-	abiBytes, err := ioutil.ReadAll(jsonAbiFile)
-	if err != nil {
-		log.Fatalf("Config: Cannot read ABI: %v", err)
-	}
-	var result map[string]interface{}
-	err = json.Unmarshal(abiBytes, &result)
-	if err != nil {
-		log.Fatalf("Config: Cannot Unmarshal ABI file json: %v", err)
-	}
-	dataAbiJson, err := json.Marshal(result["abi"])
-	if err != nil {
-		log.Fatalf("Config: Cannot Marshal ABI file json: %v", err)
-	}
-	aniABI, err := abi.JSON(strings.NewReader(string(dataAbiJson)))
-	if err != nil {
-		log.Fatalf("Config: Cannot pack ABI: %v", err)
-	}
+		abiBytes, err := ioutil.ReadAll(jsonAbiFile)
+		if err != nil {
+			log.Fatalf("Config: Cannot read ABI: %v", err)
+		}
+		var result map[string]interface{}
+		err = json.Unmarshal(abiBytes, &result)
+		if err != nil {
+			log.Fatalf("Config: Cannot Unmarshal ABI file json: %v", err)
+		}
+		dataAbiJson, err := json.Marshal(result["abi"])
+		if err != nil {
+			log.Fatalf("Config: Cannot Marshal ABI file json: %v", err)
+		}
+		_aniABI, err := abi.JSON(strings.NewReader(string(dataAbiJson)))
+		if err != nil {
+			log.Fatalf("Config: Cannot pack ABI: %v", err)
+		}
+		aniABIC <- _aniABI
+	}()
 
-	jsonMapFile, err := os.Open(providePath + "chain-info/deployments/map.json")
-	if err != nil {
-		log.Fatalf("Config: Cannot Open map.json: %v", err)
-	}
-	defer jsonMapFile.Close()
+	go func() {
+		jsonMapFile, err := os.Open(providePath + "chain-info/deployments/map.json")
+		if err != nil {
+			log.Fatalf("Config: Cannot Open map.json: %v", err)
+		}
+		defer jsonMapFile.Close()
 
-	mapBytes, err := ioutil.ReadAll(jsonMapFile)
-	if err != nil {
-		log.Fatalf("Config: Cannot Read map.json: %v", err)
-	}
+		mapBytes, err := ioutil.ReadAll(jsonMapFile)
+		if err != nil {
+			log.Fatalf("Config: Cannot Read map.json: %v", err)
+		}
 
-	var mapResult map[string]map[string][]string
-	json.Unmarshal(mapBytes, &mapResult)
-
-	contractAddress := mapResult["4"]["AniwarToken"][0]
+		var _mapResult map[string]map[string][]string
+		json.Unmarshal(mapBytes, &_mapResult)
+		mapResultC <- _mapResult["4"]["AniwarToken"][0]
+	}()
 
 	host := viper.GetString("host")
 	port := viper.GetString("port")
 	nodeUrl := viper.GetString("nodeUrl")
+	accountAddress := viper.GetString("accountAddress")
 	privateKey := viper.GetString("privateKey")
-	return &Config{
+	config = Config{
 		Host:            host,
 		Port:            port,
 		NodeUrl:         nodeUrl,
+		AccountAddress:  accountAddress,
 		PrivateKey:      privateKey,
-		AniTokenAddress: contractAddress,
+		AniTokenAddress: <-mapResultC,
 		Client:          client,
-		AniABI:          aniABI,
-	}, nil
+		AniABI:          <-aniABIC,
+	}
+	return nil
+}
+func GetConfig() (Config, error) {
+	return config, nil
 }
 
 func CallMethods(config Config, methodName string, valueInWei *big.Int, args ...interface{}) *types.Transaction {
@@ -151,5 +162,46 @@ func CallMethods(config Config, methodName string, valueInWei *big.Int, args ...
 	if err != nil {
 		log.Fatalf("SendMethods: Cannot sign transaction: %v", err)
 	}
+
+	err = config.Client.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		log.Fatalf("Cannot send transaction: %v", err)
+	}
+
 	return signedTx
+}
+
+func CallViewMethods(config Config, methodName string, valueInWei *big.Int, args ...interface{}) []interface{} {
+
+	d := time.Now().Add(time.Second * 2)
+	ctx, cancel := context.WithDeadline(context.Background(), d)
+	defer cancel()
+
+	data, err := config.AniABI.Pack(methodName, args...)
+	if err != nil {
+		log.Fatalf("CallViewMethods: Cannot Pack Method: %v", err)
+	}
+
+	contractAddress := common.HexToAddress(config.AniTokenAddress)
+	if err != nil {
+		log.Fatalf("CallViewMethods: Cannot convert Contract Address: %v", err)
+	}
+
+	msg := ethereum.CallMsg{From: common.HexToAddress(config.AccountAddress), To: &contractAddress, Value: big.NewInt(0), Data: data}
+	if err != nil {
+		log.Fatalf("CallViewMethods: Cannot convert Msg: %v", err)
+	}
+
+	respone, err := config.Client.CallContract(ctx, msg, nil)
+	if err != nil {
+		log.Fatalf("CallViewMethods: Cannot Call Contract: %v", err)
+	}
+
+	var result []interface{}
+	result, err = config.AniABI.Unpack(methodName, respone)
+	if err != nil {
+		log.Fatalf("CallViewMethods: Cannot Unpack Result: %v", err)
+	}
+
+	return result
 }

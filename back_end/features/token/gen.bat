@@ -1,0 +1,1 @@
+start protoc --go_out=. --go-grpc_out=. token_pb/token.proto

@@ -18,7 +18,7 @@ func RewardRegister(s grpc.ServiceRegistrar) {
 }
 
 func (*Server) GetNftOwnership(ctx context.Context, in *nft_pb.GetNftOwnershipRequest) (*nft_pb.GetNftOwnershipResponse, error) {
-	_, err := utils.GetConfig("../../")
+	_, err := utils.GetConfig()
 	if err != nil {
 		log.Fatalf("GetNftOwnerShip: Cannot get config: %v", err)
 	}

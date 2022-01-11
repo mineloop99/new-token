@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "/token_pb"; 
+
+package token_pb;
+
+// The greeting service definition.
+service TokenService {
+  // Sends a Random Reward
+  rpc GetTokenBalance (GetTokenBalanceRequest) returns (GetTokenBalanceResponse) {}
+}
+// The request message containing the user's name.
+message GetTokenBalanceRequest {
+  string address = 1;
+}
+
+// The response message containing the greetings
+message GetTokenBalanceResponse {
+  string balance = 1;
+}
