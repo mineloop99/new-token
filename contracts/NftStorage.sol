@@ -10,8 +10,8 @@ contract NftStorage is Ownable {
         bool isInit;
         uint256 tokenId;
     }
-    mapping(uint256 => address) private _nftDepositor;
-    mapping(uint256 => Token) private _nft;
+    mapping(uint256 => address) public _nftDepositor;
+    mapping(uint256 => Token) public _nft;
     uint256 private _tokenIndexCount = 0;
 
     constructor(address tokenContract_) {
