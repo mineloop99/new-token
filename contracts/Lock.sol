@@ -2,6 +2,7 @@
 pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -31,99 +32,88 @@ abstract contract NoDelegateCall {
     }
 }
 
-contract Locking is Ownable, ReentrancyGuard, NoDelegateCall {
+contract Locking is
+    ERC20("XOXO Clone", "gXOXO"),
+    Ownable,
+    ReentrancyGuard,
+    NoDelegateCall
+{
     using SafeERC20 for IERC20;
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+
+    IERC20 public immutable xoxo;
     // Info of each user.
     struct UserInfo {
-        uint256 timeLastLocked; // Last time Staked to calculate apy
+        uint256 timeLastLocked; // Last time Staked to calculate apr
         uint256 amount; // How many LP tokens the user has provided.
         uint256 rewardDebt; // Reward debt.
     }
 
     // Info of each pool.
     struct PoolInfo {
-        IERC20 lpToken; // Address of LP token contract.
-        uint256 apy; // Rate of token per year apy/1000
+        uint256 apr; // Rate of token per year apr/1000
         uint256 startTime;
         uint256 endTime;
     }
-
-    // Bonus muliplier for early ani makers.
-    uint256 public BONUS_MULTIPLIER = 1;
 
     // Info of each pool.
     PoolInfo public poolInfo;
     // Info of each user that stakes LP tokens.
     mapping(address => UserInfo) public userInfo;
 
-    event EnterStaking(address indexed user, uint256 amount);
-    event LeaveStaking(address indexed user, uint256 amount);
+    event EnterLocking(address indexed user, uint256 amount);
+    event LeaveLocking(address indexed user, uint256 amount);
     event ClaimReward(address indexed user, uint256 amount);
     event EmergencyWithdraw(address indexed user, uint256 amount);
 
     constructor(
-        IERC20 _aniToken,
-        uint256 _apy,
+        IERC20 _xoxo,
+        uint256 _apr,
         uint256 _startTime
     ) {
         uint256 startTime = block.timestamp + _startTime;
-        // staking pool
+        xoxo = _xoxo;
+        // Locking pool
         poolInfo = PoolInfo({
-            lpToken: _aniToken,
-            apy: _apy,
+            apr: _apr,
             startTime: startTime,
             endTime: startTime + 31556926 // plus one year
         });
     }
 
-    function updateMultiplier(uint256 multiplierNumber) public onlyOwner {
-        BONUS_MULTIPLIER = multiplierNumber;
+    // Update the given pool's Ani apr. Can only be called by the owner.
+    function setApr(uint256 _apr) public onlyOwner {
+        poolInfo.apr = _apr;
     }
 
-    // Update the given pool's Ani Apy. Can only be called by the owner.
-    function setApy(uint256 _apy) public onlyOwner {
-        poolInfo.apy = _apy;
-    }
-
-    // Update the given pool's Ani Apy. Can only be called by the owner.
+    // Update the given pool's Ani apr. Can only be called by the owner.
     function setEndTime(uint256 _endTime) public onlyOwner {
         require(_endTime > getCurrentTime());
         poolInfo.endTime = _endTime;
     }
 
-    // Stake Ani tokens to AniPool
-    function enterStaking(uint256 _amount) public nonReentrant {
+    // Lock tokens to Pool
+    function enterLocking(uint256 _amount) public nonReentrant noDelegateCall {
         require(poolInfo.endTime > getCurrentTime(), "Time: Farm has ended");
-        require(
-            poolInfo.lpToken.allowance(msg.sender, address(this)) >= _amount,
-            "Allowance: Not enough Allowance"
-        );
         UserInfo storage user = userInfo[msg.sender];
         if (_amount > 0) {
-            poolInfo.lpToken.safeTransferFrom(
-                address(msg.sender),
-                address(this),
-                _amount
-            );
+            xoxo.safeTransferFrom(address(msg.sender), address(this), _amount);
             user.amount = user.amount + _amount;
         }
-        user.timeLastStaked = block.timestamp;
+        user.timeLastLocked = block.timestamp;
 
-        emit EnterStaking(msg.sender, _amount);
+        emit EnterLocking(msg.sender, _amount);
     }
 
-    // Withdraw Ani tokens from STAKING.
-    function leaveStaking(uint256 _amount) public whenNotPaused nonReentrant {
-        PoolInfo storage pool = poolInfo;
+    // Withdraw Ani tokens from Locking.
+    function leaveLocking(uint256 _amount) public nonReentrant {
         updateUser(msg.sender);
         UserInfo storage user = userInfo[msg.sender];
         require(user.amount >= _amount, "withdraw: not good");
         if (_amount > 0) {
             user.amount = user.amount - _amount;
-            pool.lpToken.safeTransfer(msg.sender, _amount);
+            xoxo.safeTransfer(msg.sender, _amount);
         }
-        emit LeaveStaking(msg.sender, _amount);
+        emit LeaveLocking(msg.sender, _amount);
     }
 
     function updateUser(address _userAddress) public {
@@ -132,28 +122,19 @@ contract Locking is Ownable, ReentrancyGuard, NoDelegateCall {
         }
         UserInfo storage user = userInfo[_userAddress];
         user.rewardDebt += calculateRewardDebt(
-            user.timeLastStaked,
+            user.timeLastLocked,
             getCurrentTime(),
             user.amount
         );
     }
 
     // ClaimAllReward
-    function claimReward() public whenNotPaused nonReentrant {
+    function claimReward() public nonReentrant noDelegateCall {
         updateUser(msg.sender);
         UserInfo storage user = userInfo[msg.sender];
         require(user.rewardDebt > 0, "Reward Amount: wut?");
-        poolInfo.lpToken.safeTransfer(msg.sender, user.rewardDebt);
+        xoxo.safeTransfer(msg.sender, user.rewardDebt);
         emit ClaimReward(msg.sender, user.rewardDebt);
-        user.rewardDebt = 0;
-    }
-
-    // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw() public whenNotPaused {
-        UserInfo storage user = userInfo[msg.sender];
-        poolInfo.lpToken.safeTransfer(address(msg.sender), user.amount);
-        emit EmergencyWithdraw(msg.sender, user.amount);
-        user.amount = 0;
         user.rewardDebt = 0;
     }
 
@@ -162,20 +143,20 @@ contract Locking is Ownable, ReentrancyGuard, NoDelegateCall {
         uint256 _from,
         uint256 _to,
         uint256 _userAmount
-    ) public view returns (uint256) {
-        uint256 multiplier = (_to - _from) * BONUS_MULTIPLIER;
-        uint256 numberOfDays = multiplier / 86400; // 1 Day = 86400 seconds
-        uint256 apyPerDay = (poolInfo.apy * 1000) / 365;
-        return (_userAmount * numberOfDays * apyPerDay) / (1000 * 1000);
+    ) public view noDelegateCall returns (uint256) {
+        uint256 time = _to - _from;
+        uint256 numberOfDays = time / 86400; // 1 Day = 86400 seconds
+        uint256 aprPerDay = (poolInfo.apr * 1000) / 365;
+        return (_userAmount * numberOfDays * aprPerDay) / (1000 * 1000);
     }
 
-    // Safe ani transfer function, just in case if rounding error causes pool to not have enough CAKEs.
-    function safeAniTransfer(address _to, uint256 _amount) public onlyOwner {
-        uint256 aniBal = poolInfo.lpToken.balanceOf(address(this));
-        if (_amount > aniBal) {
-            poolInfo.lpToken.transfer(_to, aniBal);
+    // Safe transfer function, just in case if rounding error causes pool to not have enough Tokens.
+    function safeXoxoTransfer(address _to, uint256 _amount) public onlyOwner {
+        uint256 xoxoBal = xoxo.balanceOf(address(this));
+        if (_amount > xoxoBal) {
+            xoxo.transfer(_to, xoxoBal);
         } else {
-            poolInfo.lpToken.transfer(_to, _amount);
+            xoxo.transfer(_to, _amount);
         }
     }
 
@@ -183,11 +164,31 @@ contract Locking is Ownable, ReentrancyGuard, NoDelegateCall {
         return block.timestamp;
     }
 
-    function pause() public onlyOwner {
-        _pause();
+    // returns how much XOXO someone gets for redeeming gXOXO
+    function gXOXOForXOXO(uint256 _gXOXOAmount)
+        external
+        view
+        noDelegateCall
+        returns (uint256 xoxoAmount_)
+    {
+        uint256 totalgXOXO = totalSupply();
+        xoxoAmount_ =
+            (_gXOXOAmount * xoxo.balanceOf(address(this))) /
+            totalgXOXO;
     }
 
-    function unpause() public onlyOwner {
-        _unpause();
+    // returns how much gXOXO someone gets for depositing XOXO
+    function XoxoForgXoxo(uint256 _xoxoAmount)
+        external
+        view
+        returns (uint256 gXoxoAmount_)
+    {
+        uint256 totalXoxo = xoxo.balanceOf(address(this));
+        uint256 totalgXoxo = totalSupply();
+        if (totalgXoxo == 0 || totalXoxo == 0) {
+            gXoxoAmount_ = _xoxoAmount;
+        } else {
+            gXoxoAmount_ = (_xoxoAmount * totalgXoxo) / totalXoxo;
+        }
     }
 }
