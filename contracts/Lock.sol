@@ -165,7 +165,7 @@ contract Locking is
     }
 
     // returns how much XOXO someone gets for redeeming gXOXO
-    function gXOXOForXOXO(uint256 _gXOXOAmount)
+    function gXoxoForXoxo(uint256 _gXOXOAmount)
         external
         view
         noDelegateCall
